@@ -9,10 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as AuthedNotificationsRouteImport } from './routes/_authed/notifications'
+import { Route as AuthedQuizCreateRouteImport } from './routes/_authed/quiz/create'
 
+const AuthedRouteRoute = AuthedRouteRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,39 +35,76 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedNotificationsRoute = AuthedNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedQuizCreateRoute = AuthedQuizCreateRouteImport.update({
+  id: '/quiz/create',
+  path: '/quiz/create',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/notifications': typeof AuthedNotificationsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
+  '/quiz/create': typeof AuthedQuizCreateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/notifications': typeof AuthedNotificationsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
+  '/quiz/create': typeof AuthedQuizCreateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteRouteWithChildren
+  '/_authed/notifications': typeof AuthedNotificationsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
+  '/_authed/quiz/create': typeof AuthedQuizCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/callback' | '/auth/login'
+  fullPaths:
+    | '/'
+    | '/notifications'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/quiz/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/callback' | '/auth/login'
-  id: '__root__' | '/' | '/auth/callback' | '/auth/login'
+  to: '/' | '/notifications' | '/auth/callback' | '/auth/login' | '/quiz/create'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/_authed/notifications'
+    | '/auth/callback'
+    | '/auth/login'
+    | '/_authed/quiz/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthLoginRoute: typeof AuthLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +126,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/notifications': {
+      id: '/_authed/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthedNotificationsRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/quiz/create': {
+      id: '/_authed/quiz/create'
+      path: '/quiz/create'
+      fullPath: '/quiz/create'
+      preLoaderRoute: typeof AuthedQuizCreateRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
   }
 }
 
+interface AuthedRouteRouteChildren {
+  AuthedNotificationsRoute: typeof AuthedNotificationsRoute
+  AuthedQuizCreateRoute: typeof AuthedQuizCreateRoute
+}
+
+const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
+  AuthedNotificationsRoute: AuthedNotificationsRoute,
+  AuthedQuizCreateRoute: AuthedQuizCreateRoute,
+}
+
+const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
+  AuthedRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthedRouteRoute: AuthedRouteRouteWithChildren,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthLoginRoute: AuthLoginRoute,
 }

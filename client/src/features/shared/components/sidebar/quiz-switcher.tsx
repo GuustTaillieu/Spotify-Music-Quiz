@@ -17,19 +17,18 @@ import {
   useSidebar,
 } from "@/features/shared/components/ui/sidebar";
 
-export function TeamSwitcher({
-  teams,
+export function QuizSwitcher({
+  quizes,
 }: {
-  teams: {
+  quizes: {
     name: string;
     logo: React.ElementType;
-    plan: string;
   }[];
 }) {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = useState(teams[0]);
+  const [activeQuiz, setActiveQuiz] = useState(quizes[0]);
 
-  if (!activeTeam) {
+  if (!activeQuiz) {
     return null;
   }
 
@@ -43,11 +42,12 @@ export function TeamSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <activeTeam.logo className="size-4" />
+                <activeQuiz.logo className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeTeam.name}</span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
+                <span className="truncate font-medium">{activeQuiz.name}</span>
+                {/* <span className="truncate text-xs">{activeQuiz.state}</span> */}
+                <span className="truncate text-xs">Ready to play</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -61,10 +61,10 @@ export function TeamSwitcher({
             <DropdownMenuLabel className="text-muted-foreground text-xs">
               Teams
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {quizes.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveTeam(team)}
+                onClick={() => setActiveQuiz(team)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-md border">

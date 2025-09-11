@@ -1,9 +1,8 @@
-import { useRouteContext } from "@tanstack/react-router";
+import { trpc } from "@/router";
 
 export function useCurrentUser() {
-  const loaderData = useRouteContext({ from: "__root__" });
-  if (!loaderData) return null;
+  const currentUserQuery = trpc.auth.currentUser.useQuery();
+  if (!currentUserQuery.data) return null;
 
-  const { currentUser } = loaderData;
-  return currentUser;
+  return currentUserQuery.data;
 }

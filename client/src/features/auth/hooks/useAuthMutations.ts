@@ -14,6 +14,7 @@ export const useAuthMutations = (options?: useAuthMutationsProps) => {
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: async () => {
       await utils.auth.currentUser.invalidate();
+      await utils.notifications.unreadCount.reset();
 
       options?.logout?.onSuccess?.();
 

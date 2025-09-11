@@ -6,8 +6,9 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
+import { useAuthMutations } from "@/features/auth/hooks/useAuthMutations";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import {
   Avatar,
@@ -29,6 +30,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/features/shared/components/ui/sidebar";
+import { router } from "@/router";
+import { toast } from "sonner";
 
 type UserButtonProps = {
   fallback?: ReactNode;
@@ -37,6 +40,21 @@ type UserButtonProps = {
 export function UserButton({ fallback = null }: UserButtonProps) {
   const currentUser = useCurrentUser();
   const { isMobile } = useSidebar();
+  const { logoutMutation } = useAuthMutations({
+    logout: {
+      onSuccess() {
+        router.navigate({ to: "/", replace: true });
+      },
+    },
+  });
+
+  const handleLogout = () => logoutMutation.mutate();
+
+  useEffect(() => {
+    if (currentUser) {
+      toast.success("You are successfully logged in!");
+    }
+  }, [currentUser]);
 
   if (!currentUser) return fallback;
 
@@ -47,7 +65,7 @@ export function UserButton({ fallback = null }: UserButtonProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-0"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
@@ -90,30 +108,32 @@ export function UserButton({ fallback = null }: UserButtonProps) {
                 </div>
               </div>
             </DropdownMenuLabel>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuGroup> */}
+            {/*   <DropdownMenuItem> */}
+            {/*     <Sparkles /> */}
+            {/*     Upgrade to Pro */}
+            {/*   </DropdownMenuItem> */}
+            {/* </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem> */}
+              {/*   <BadgeCheck /> */}
+              {/*   Account */}
+              {/* </DropdownMenuItem> */}
+              {/* <DropdownMenuItem> */}
+              {/*   <CreditCard /> */}
+              {/*   Billing */}
+              {/* </DropdownMenuItem> */}
+              <DropdownMenuItem
+                onClick={() => router.navigate({ to: "/notifications" })}
+              >
                 <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

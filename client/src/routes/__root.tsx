@@ -21,10 +21,6 @@ export type RouterAppContext = {
 };
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
-  beforeLoad: async ({ context: { trpcQueryUtils } }) => {
-    const currentUser = await trpcQueryUtils.auth.currentUser.ensureData();
-    return { currentUser };
-  },
   component: Root,
 });
 

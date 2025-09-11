@@ -5,11 +5,13 @@ import express from "express";
 import { join } from "path";
 
 import { authRouter } from "./features/auth/router";
+import { notificationRouter } from "./features/notification/router";
 import { createContext, router } from "./trpc";
 import { env } from "./utils/env";
 
 const appRouter = router({
   auth: authRouter,
+  notifications: notificationRouter,
 });
 export type AppRouter = typeof appRouter;
 

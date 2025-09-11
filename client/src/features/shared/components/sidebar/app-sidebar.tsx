@@ -11,6 +11,8 @@ import {
   SquareTerminal,
 } from "lucide-react";
 
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { CreateQuizButton } from "@/features/quiz/components/create-quiz-button";
 import {
   Sidebar,
   SidebarContent,
@@ -20,27 +22,23 @@ import {
 } from "@/features/shared/components/ui/sidebar";
 
 import { NavMain } from "./nav-main";
+import { QuizSwitcher } from "./quiz-switcher";
 import { UserButton } from "./user-button";
-import { TeamSwitcher } from "./team-switcher";
-import { LoginButton } from "@/features/auth/components/login-button";
 
 // This is sample data.
 const data = {
-  teams: [
+  quizes: [
     {
       name: "Acme Inc",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
     },
     {
       name: "Acme Corp.",
       logo: AudioWaveform,
-      plan: "Startup",
     },
     {
       name: "Evil Corp.",
       logo: Command,
-      plan: "Free",
     },
   ],
   navMain: [
@@ -150,16 +148,22 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const currentUser = useCurrentUser();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        {currentUser ? (
+          <QuizSwitcher quizes={data.quizes} />
+        ) : (
+          <CreateQuizButton />
+        )}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <UserButton fallback={<LoginButton />} />
+        <UserButton />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

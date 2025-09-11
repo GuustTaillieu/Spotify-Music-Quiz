@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { toast } from "sonner";
 import z from "zod";
 
 const searchSchema = z.object({
@@ -8,8 +9,10 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/auth/callback")({
   validateSearch: searchSchema,
-  beforeLoad: ({ search: { code, state } }) => ({ code, state }),
-  loader: async ({ context: { trpcQueryUtils, code, state } }) => {
+  beforeLoad: async ({
+    search: { code, state },
+    context: { trpcQueryUtils },
+  }) => {
     await trpcQueryUtils.auth.exchangeToken.prefetch({
       code,
       state,

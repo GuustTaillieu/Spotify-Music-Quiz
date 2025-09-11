@@ -39,6 +39,7 @@ export async function createContext(
   // If refresh token is invalid, return
   const { data: spotifyToken, success } = spotifyTokenSchema.safeParse(payload);
   if (!success) {
+    opts.res.clearCookie(ACCESS_TOKEN_KEY);
     return context;
   }
 
@@ -55,6 +56,7 @@ export async function createContext(
       httpOnly: true,
       secure: true,
       maxAge: 60 * 60 * 1000, // 1 hour
+      partitioned: true,
     });
   }
 

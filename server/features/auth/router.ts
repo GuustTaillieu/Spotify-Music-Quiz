@@ -21,6 +21,7 @@ export const authRouter = router({
         httpOnly: true,
         secure: true,
         maxAge: 60 * 60 * 1000, // 1 hour
+        partitioned: true,
       });
       return Spotify.getAuthUrl(state);
     }),
@@ -51,6 +52,7 @@ export const authRouter = router({
         httpOnly: true,
         secure: true,
         maxAge: 60 * 60 * 1000, // 1 hour
+        partitioned: true,
       });
 
       const user = await Spotify.auth(token).getMe();
