@@ -1,4 +1,4 @@
-import z from "zod";
+import z from "zod/v4";
 
 export const spotifyUserSchema = z.object({
   id: z.string(),
@@ -20,7 +20,6 @@ export const spotifyTokenSchema = z.object({
   token_type: z.string(),
   scope: z.string(),
   expires_in: z.number(),
-  iat: z.number(),
   refresh_token: z.string(),
 });
 

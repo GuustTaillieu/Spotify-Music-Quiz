@@ -1,4 +1,5 @@
-import { useToast } from "@/features/shared/hooks/useToast";
+import { toast } from "sonner";
+
 import { trpc } from "@/router";
 
 type useAuthMutationsProps = {
@@ -9,7 +10,6 @@ type useAuthMutationsProps = {
 
 export const useAuthMutations = (options?: useAuthMutationsProps) => {
   const utils = trpc.useUtils();
-  const { toast } = useToast();
 
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: async () => {
@@ -18,16 +18,13 @@ export const useAuthMutations = (options?: useAuthMutationsProps) => {
 
       options?.logout?.onSuccess?.();
 
-      toast({
-        title: "Logged out",
+      toast("Logged out", {
         description: "You have been logged out successfully.",
       });
     },
     onError: (error) => {
-      toast({
-        title: "Error logging out",
+      toast.error("Error logging out", {
         description: error.message,
-        variant: "destructive",
       });
     },
   });

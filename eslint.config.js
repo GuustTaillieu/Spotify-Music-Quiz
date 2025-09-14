@@ -4,6 +4,7 @@ import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import simpleImportSortPlugin from "eslint-plugin-simple-import-sort";
 import reactCompiler from "eslint-plugin-react-compiler";
+import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
 export default [
   {
@@ -14,6 +15,7 @@ export default [
       "react-hooks": reactHooksPlugin,
       "@typescript-eslint": tsPlugin,
       "simple-import-sort": simpleImportSortPlugin,
+      "unused-imports": unusedImportsPlugin,
     },
     languageOptions: {
       parser: tsParser,
@@ -53,12 +55,18 @@ export default [
 
       // Shared rules for both client and server
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": [
+      "@typescript-eslint/no-unused-vars": "off",
+
+      // Enable rules from eslint-plugin-unused-imports
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
         "warn",
         {
-          argsIgnorePattern: "^_",
+          vars: "all",
           varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
         },
       ],
 

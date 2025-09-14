@@ -1,10 +1,10 @@
 import { and, count, desc, eq } from "drizzle-orm";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { db } from "../../database";
 import { protectedProcedure, router } from "../../trpc";
 import { DEFAULT_NOTIFICATION_LIMIT } from "../../utils/constants";
-import { User } from "../auth/models";
+import { User } from "../user/models";
 import {
   Notification,
   notificationSelectSchema,
@@ -92,20 +92,19 @@ function getNotificationContent(
     fromUser: Pick<User, "name"> | null;
   },
 ): string {
-  console.log(notification.type);
   switch (notification.type) {
-    case "user_attending_experience":
-      return `${notification.fromUser?.name} is attending your experience`;
-    case "user_unattending_experience":
-      return `${notification.fromUser?.name} is no longer attending your experience`;
-    case "user_commented_experience":
-      return `${notification.fromUser?.name} commented on your experience`;
+    case "user_attending_quiz":
+      return `${notification.fromUser?.name} is attending your quiz`;
+    case "user_unattending_quiz":
+      return `${notification.fromUser?.name} is no longer attending your quiz`;
+    case "user_commented_quiz":
+      return `${notification.fromUser?.name} commented on your quiz`;
     case "user_followed_user":
       return `${notification.fromUser?.name} followed you`;
-    case "user_kicked_experience":
-      return `${notification.fromUser?.name} kicked you from the experience`;
-    case "user_shared_experience":
-      return `${notification.fromUser?.name} shared an experience with you`;
+    case "user_kicked_quiz":
+      return `${notification.fromUser?.name} kicked you from the quiz`;
+    case "user_shared_quiz":
+      return `${notification.fromUser?.name} shared an quiz with you`;
     default:
       return "New notification";
   }

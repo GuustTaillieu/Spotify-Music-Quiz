@@ -1,96 +1,46 @@
 import { relations } from "drizzle-orm";
 
 import {
-  commentLikesTable,
-  commentsTable,
-  experienceAttendeesTable,
-  experienceFavoritesTable,
-  experiencesTable,
-  experienceTagsTable,
   notificationsTable,
-  tagsTable,
+  quizAttendeesTable,
+  quizesTable,
+  quizFavoritesTable,
   userFollowsTable,
   usersTable,
 } from "./schema";
 
-export const experiencesRelations = relations(
-  experiencesTable,
-  ({ many, one }) => ({
-    attendees: many(experienceAttendeesTable),
-    comments: many(commentsTable),
-    notifications: many(notificationsTable),
-    tags: many(experienceTagsTable),
-    user: one(usersTable, {
-      fields: [experiencesTable.userId],
-      references: [usersTable.id],
-    }),
-  }),
-);
-
-export const experienceAttendeesRelations = relations(
-  experienceAttendeesTable,
-  ({ one }) => ({
-    experience: one(experiencesTable, {
-      fields: [experienceAttendeesTable.experienceId],
-      references: [experiencesTable.id],
-    }),
-    user: one(usersTable, {
-      fields: [experienceAttendeesTable.userId],
-      references: [usersTable.id],
-    }),
-  }),
-);
-
-export const experienceTagsRelations = relations(
-  experienceTagsTable,
-  ({ one }) => ({
-    experience: one(experiencesTable, {
-      fields: [experienceTagsTable.experienceId],
-      references: [experiencesTable.id],
-    }),
-    tag: one(tagsTable, {
-      fields: [experienceTagsTable.tagId],
-      references: [tagsTable.id],
-    }),
-  }),
-);
-
-export const experienceFavoritesRelations = relations(
-  experienceFavoritesTable,
-  ({ one }) => ({
-    experience: one(experiencesTable, {
-      fields: [experienceFavoritesTable.experienceId],
-      references: [experiencesTable.id],
-    }),
-    user: one(usersTable, {
-      fields: [experienceFavoritesTable.userId],
-      references: [usersTable.id],
-    }),
-  }),
-);
-
-export const commentsRelations = relations(commentsTable, ({ one, many }) => ({
-  experience: one(experiencesTable, {
-    fields: [commentsTable.experienceId],
-    references: [experiencesTable.id],
-  }),
-  likes: many(commentLikesTable),
+export const quizesRelations = relations(quizesTable, ({ many, one }) => ({
+  attendees: many(quizAttendeesTable),
   notifications: many(notificationsTable),
-  user: one(usersTable, {
-    fields: [commentsTable.userId],
+  owner: one(usersTable, {
+    fields: [quizesTable.ownerId],
     references: [usersTable.id],
   }),
 }));
 
-export const commentLikesRelations = relations(
-  commentLikesTable,
+export const quizAttendeesRelations = relations(
+  quizAttendeesTable,
   ({ one }) => ({
-    comment: one(commentsTable, {
-      fields: [commentLikesTable.commentId],
-      references: [commentsTable.id],
+    quiz: one(quizesTable, {
+      fields: [quizAttendeesTable.quizId],
+      references: [quizesTable.id],
     }),
     user: one(usersTable, {
-      fields: [commentLikesTable.userId],
+      fields: [quizAttendeesTable.userId],
+      references: [usersTable.id],
+    }),
+  }),
+);
+
+export const quizFavoritesRelations = relations(
+  quizFavoritesTable,
+  ({ one }) => ({
+    quiz: one(quizesTable, {
+      fields: [quizFavoritesTable.quizId],
+      references: [quizesTable.id],
+    }),
+    user: one(usersTable, {
+      fields: [quizFavoritesTable.userId],
       references: [usersTable.id],
     }),
   }),
@@ -99,13 +49,9 @@ export const commentLikesRelations = relations(
 export const notificationsRelations = relations(
   notificationsTable,
   ({ one }) => ({
-    experience: one(experiencesTable, {
-      fields: [notificationsTable.experienceId],
-      references: [experiencesTable.id],
-    }),
-    comment: one(commentsTable, {
-      fields: [notificationsTable.commentId],
-      references: [commentsTable.id],
+    experience: one(quizesTable, {
+      fields: [notificationsTable.quizId],
+      references: [quizesTable.id],
     }),
     fromUser: one(usersTable, {
       fields: [notificationsTable.fromUserId],
@@ -118,8 +64,14 @@ export const notificationsRelations = relations(
   }),
 );
 
-export const tagsRelations = relations(tagsTable, ({ many }) => ({
-  experiences: many(experienceTagsTable),
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  experienceFavorites: many(quizFavoritesTable),
+  followers: many(userFollowsTable, { relationName: "following" }),
+  following: many(userFollowsTable, { relationName: "follower" }),
+  notifications: many(notificationsTable),
+  notificationsFrom: many(notificationsTable, {
+    relationName: "fromUser",
+  }),
 }));
 
 export const userFollowsRelations = relations(userFollowsTable, ({ one }) => ({
@@ -130,15 +82,5 @@ export const userFollowsRelations = relations(userFollowsTable, ({ one }) => ({
   following: one(usersTable, {
     fields: [userFollowsTable.followingId],
     references: [usersTable.id],
-  }),
-}));
-
-export const usersRelations = relations(usersTable, ({ many }) => ({
-  experienceFavorites: many(experienceFavoritesTable),
-  followers: many(userFollowsTable, { relationName: "following" }),
-  following: many(userFollowsTable, { relationName: "follower" }),
-  notifications: many(notificationsTable),
-  notificationsFrom: many(notificationsTable, {
-    relationName: "fromUser",
   }),
 }));

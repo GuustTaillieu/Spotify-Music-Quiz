@@ -1,8 +1,13 @@
 import { trpc } from "@/router";
 
 export function useCurrentUser() {
-  const currentUserQuery = trpc.auth.currentUser.useQuery();
-  if (!currentUserQuery.data) return null;
+  const { data, ...currentUserQuery } = trpc.auth.currentUser.useQuery();
+  if (!data)
+    return { ...currentUserQuery, currentUser: null, accessToken: null };
 
-  return currentUserQuery.data;
+  return {
+    currentUser: data.currentUser,
+    accessToken: data.accessToken,
+    ...currentUserQuery,
+  };
 }

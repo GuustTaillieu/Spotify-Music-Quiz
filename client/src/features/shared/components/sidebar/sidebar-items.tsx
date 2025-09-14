@@ -1,4 +1,4 @@
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import {
   Collapsible,
@@ -15,21 +15,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/features/shared/components/ui/sidebar";
+import { SidebarItem } from "@/lib/conststants/sidebar-items";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
+type SidebarItemsProps = {
+  items: SidebarItem[];
+};
+
+export function SidebarItems({ items }: SidebarItemsProps) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>

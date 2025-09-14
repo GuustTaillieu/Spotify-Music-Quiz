@@ -6,11 +6,17 @@ import { join } from "path";
 
 import { authRouter } from "./features/auth/router";
 import { notificationRouter } from "./features/notification/router";
+import { questionRouter } from "./features/question/router";
+import { quizRouter } from "./features/quiz/router";
+import { userRouter } from "./features/user/router";
 import { createContext, router } from "./trpc";
 import { env } from "./utils/env";
 
 const appRouter = router({
   auth: authRouter,
+  quiz: quizRouter,
+  questions: questionRouter,
+  users: userRouter,
   notifications: notificationRouter,
 });
 export type AppRouter = typeof appRouter;

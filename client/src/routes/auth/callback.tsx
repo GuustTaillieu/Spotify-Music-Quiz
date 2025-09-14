@@ -1,5 +1,4 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { toast } from "sonner";
 import z from "zod";
 
 const searchSchema = z.object({
@@ -9,14 +8,14 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/auth/callback")({
   validateSearch: searchSchema,
-  beforeLoad: async ({
-    search: { code, state },
-    context: { trpcQueryUtils },
-  }) => {
-    await trpcQueryUtils.auth.exchangeToken.prefetch({
-      code,
-      state,
-    });
+  beforeLoad: async ({ search: { code, state } }) => ({ code, state }),
+  loader: async ({ context: { trpcQueryUtils, state, code } }) => {
+    await trpcQueryUtils.auth.exchangeToken.prefetch({ code, state });
     return redirect({ to: "/" });
   },
+  component: CallbackPage,
 });
+
+function CallbackPage() {
+  return <div className="p-4">Redirecting...</div>;
+}

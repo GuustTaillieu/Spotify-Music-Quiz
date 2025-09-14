@@ -2,17 +2,16 @@ import { index, int, text } from "drizzle-orm/sqlite-core";
 import { sqliteTable } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 
-import { usersTable } from "../auth/models";
-import { commentsTable } from "../comment/models";
-import { experiencesTable } from "../experience/models";
+import { quizesTable } from "../quiz/models";
+import { usersTable } from "../user/models";
 
 const notificationTypeEnum = [
-  "user_attending_experience",
-  "user_unattending_experience",
-  "user_commented_experience",
+  "user_attending_quiz",
+  "user_unattending_quiz",
+  "user_commented_quiz",
   "user_followed_user",
-  "user_kicked_experience",
-  "user_shared_experience",
+  "user_kicked_quiz",
+  "user_shared_quiz",
 ] as const;
 
 export const notificationsTable = sqliteTable(
@@ -24,10 +23,7 @@ export const notificationsTable = sqliteTable(
     }).notNull(),
     read: int("read", { mode: "boolean" }).notNull().default(false),
 
-    commentId: int("comment_id").references(() => commentsTable.id, {
-      onDelete: "cascade",
-    }),
-    experienceId: int("experience_id").references(() => experiencesTable.id, {
+    quizId: int("quiz_id").references(() => quizesTable.id, {
       onDelete: "cascade",
     }),
     fromUserId: int("from_user_id")
@@ -42,11 +38,8 @@ export const notificationsTable = sqliteTable(
     createdAt: text("created_at").notNull(),
   },
   (table) => ({
-    notifications_experience_id_idx: index(
-      "notifications_experience_id_idx",
-    ).on(table.experienceId),
-    notifications_comment_id_idx: index("notifications_comment_id_idx").on(
-      table.commentId,
+    notifications_quiz_id_idx: index("notifications_quiz_id_idx").on(
+      table.quizId,
     ),
     notifications_from_user_id_idx: index("notifications_from_user_id_idx").on(
       table.fromUserId,

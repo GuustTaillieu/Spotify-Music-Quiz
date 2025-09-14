@@ -18,11 +18,19 @@ export const auth = {
     return jwt.sign(payload, env.AUTH_SECRET, options);
   },
 
-  verifyToken: <T extends {}>(token: string, options?: jwt.VerifyOptions) => {
+  verifyToken: <T extends {} | null>(
+    token: string,
+    options?: jwt.VerifyOptions,
+  ) => {
     try {
       return jwt.verify(token, env.AUTH_SECRET, options) as T;
     } catch {
-      return false;
+      return null;
     }
+  },
+
+  isTokenExpired: async ({ exp }: { exp: number }) => {
+    console.log(new Date(exp).toISOString(), new Date().toISOString());
+    return exp > Date.now() / 1000 + 60;
   },
 };

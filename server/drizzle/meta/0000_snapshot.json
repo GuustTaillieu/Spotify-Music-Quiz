@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5e4f0577-0800-4a30-996f-0ddbd5c62079",
+  "id": "5f1054f0-d19d-472b-bddd-b6a42f6bb56d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "user_follows": {
@@ -35,8 +35,12 @@
           "name": "user_follows_follower_id_users_id_fk",
           "tableFrom": "user_follows",
           "tableTo": "users",
-          "columnsFrom": ["follower_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "follower_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -44,15 +48,22 @@
           "name": "user_follows_following_id_users_id_fk",
           "tableFrom": "user_follows",
           "tableTo": "users",
-          "columnsFrom": ["following_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "following_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "user_follows_follower_id_following_id_pk": {
-          "columns": ["follower_id", "following_id"],
+          "columns": [
+            "follower_id",
+            "following_id"
+          ],
           "name": "user_follows_follower_id_following_id_pk"
         }
       },
@@ -69,36 +80,15 @@
           "notNull": true,
           "autoincrement": true
         },
+        "spotifyId": {
+          "name": "spotifyId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "name": {
           "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "bio": {
-          "name": "bio",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "avatarUrl": {
-          "name": "avatarUrl",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "password": {
-          "name": "password",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -119,23 +109,17 @@
           "autoincrement": false
         }
       },
-      "indexes": {
-        "users_email_unique": {
-          "name": "users_email_unique",
-          "columns": ["email"],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "comment_likes": {
-      "name": "comment_likes",
+    "quiz_attendees": {
+      "name": "quiz_attendees",
       "columns": {
-        "comment_id": {
-          "name": "comment_id",
+        "quiz_id": {
+          "name": "quiz_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -157,128 +141,66 @@
         }
       },
       "indexes": {
-        "comment_likes_comment_id_idx": {
-          "name": "comment_likes_comment_id_idx",
-          "columns": ["comment_id"],
+        "quiz_attendees_quiz_id_idx": {
+          "name": "quiz_attendees_quiz_id_idx",
+          "columns": [
+            "quiz_id"
+          ],
           "isUnique": false
         },
-        "comment_likes_user_id_idx": {
-          "name": "comment_likes_user_id_idx",
-          "columns": ["user_id"],
+        "quiz_attendees_user_id_idx": {
+          "name": "quiz_attendees_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "comment_likes_comment_id_comments_id_fk": {
-          "name": "comment_likes_comment_id_comments_id_fk",
-          "tableFrom": "comment_likes",
-          "tableTo": "comments",
-          "columnsFrom": ["comment_id"],
-          "columnsTo": ["id"],
+        "quiz_attendees_quiz_id_quizes_id_fk": {
+          "name": "quiz_attendees_quiz_id_quizes_id_fk",
+          "tableFrom": "quiz_attendees",
+          "tableTo": "quizes",
+          "columnsFrom": [
+            "quiz_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "comment_likes_user_id_users_id_fk": {
-          "name": "comment_likes_user_id_users_id_fk",
-          "tableFrom": "comment_likes",
+        "quiz_attendees_user_id_users_id_fk": {
+          "name": "quiz_attendees_user_id_users_id_fk",
+          "tableFrom": "quiz_attendees",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "comment_likes_comment_id_user_id_pk": {
-          "columns": ["comment_id", "user_id"],
-          "name": "comment_likes_comment_id_user_id_pk"
+        "quiz_attendees_quiz_id_user_id_pk": {
+          "columns": [
+            "quiz_id",
+            "user_id"
+          ],
+          "name": "quiz_attendees_quiz_id_user_id_pk"
         }
       },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "comments": {
-      "name": "comments",
+    "quiz_favorites": {
+      "name": "quiz_favorites",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "experience_id": {
-          "name": "experience_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "comments_experience_id_idx": {
-          "name": "comments_experience_id_idx",
-          "columns": ["experience_id"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "comments_experience_id_experiences_id_fk": {
-          "name": "comments_experience_id_experiences_id_fk",
-          "tableFrom": "comments",
-          "tableTo": "experiences",
-          "columnsFrom": ["experience_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "comments_user_id_users_id_fk": {
-          "name": "comments_user_id_users_id_fk",
-          "tableFrom": "comments",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "experience_attendees": {
-      "name": "experience_attendees",
-      "columns": {
-        "experience_id": {
-          "name": "experience_id",
+        "quiz_id": {
+          "name": "quiz_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -300,58 +222,73 @@
         }
       },
       "indexes": {
-        "experience_attendees_experience_id_idx": {
-          "name": "experience_attendees_experience_id_idx",
-          "columns": ["experience_id"],
+        "quiz_favorites_quiz_id_idx": {
+          "name": "quiz_favorites_quiz_id_idx",
+          "columns": [
+            "quiz_id"
+          ],
           "isUnique": false
         },
-        "experience_attendees_user_id_idx": {
-          "name": "experience_attendees_user_id_idx",
-          "columns": ["user_id"],
+        "quiz_favorites_user_id_idx": {
+          "name": "quiz_favorites_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "experience_attendees_experience_id_experiences_id_fk": {
-          "name": "experience_attendees_experience_id_experiences_id_fk",
-          "tableFrom": "experience_attendees",
-          "tableTo": "experiences",
-          "columnsFrom": ["experience_id"],
-          "columnsTo": ["id"],
+        "quiz_favorites_quiz_id_quizes_id_fk": {
+          "name": "quiz_favorites_quiz_id_quizes_id_fk",
+          "tableFrom": "quiz_favorites",
+          "tableTo": "quizes",
+          "columnsFrom": [
+            "quiz_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "experience_attendees_user_id_users_id_fk": {
-          "name": "experience_attendees_user_id_users_id_fk",
-          "tableFrom": "experience_attendees",
+        "quiz_favorites_user_id_users_id_fk": {
+          "name": "quiz_favorites_user_id_users_id_fk",
+          "tableFrom": "quiz_favorites",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "experience_attendees_experience_id_user_id_pk": {
-          "columns": ["experience_id", "user_id"],
-          "name": "experience_attendees_experience_id_user_id_pk"
+        "quiz_favorites_quiz_id_user_id_pk": {
+          "columns": [
+            "quiz_id",
+            "user_id"
+          ],
+          "name": "quiz_favorites_quiz_id_user_id_pk"
         }
       },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "experience_favorites": {
-      "name": "experience_favorites",
+    "quiz_questions": {
+      "name": "quiz_questions",
       "columns": {
-        "experience_id": {
-          "name": "experience_id",
+        "quiz_id": {
+          "name": "quiz_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "user_id": {
-          "name": "user_id",
+        "question_id": {
+          "name": "question_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -366,114 +303,63 @@
         }
       },
       "indexes": {
-        "experience_favorites_experience_id_idx": {
-          "name": "experience_favorites_experience_id_idx",
-          "columns": ["experience_id"],
+        "quiz_questions_quiz_id_idx": {
+          "name": "quiz_questions_quiz_id_idx",
+          "columns": [
+            "quiz_id"
+          ],
           "isUnique": false
         },
-        "experience_favorites_user_id_idx": {
-          "name": "experience_favorites_user_id_idx",
-          "columns": ["user_id"],
+        "quiz_questions_question_id_idx": {
+          "name": "quiz_questions_question_id_idx",
+          "columns": [
+            "question_id"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "experience_favorites_experience_id_experiences_id_fk": {
-          "name": "experience_favorites_experience_id_experiences_id_fk",
-          "tableFrom": "experience_favorites",
-          "tableTo": "experiences",
-          "columnsFrom": ["experience_id"],
-          "columnsTo": ["id"],
+        "quiz_questions_quiz_id_quizes_id_fk": {
+          "name": "quiz_questions_quiz_id_quizes_id_fk",
+          "tableFrom": "quiz_questions",
+          "tableTo": "quizes",
+          "columnsFrom": [
+            "quiz_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "experience_favorites_user_id_users_id_fk": {
-          "name": "experience_favorites_user_id_users_id_fk",
-          "tableFrom": "experience_favorites",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+        "quiz_questions_question_id_questions_id_fk": {
+          "name": "quiz_questions_question_id_questions_id_fk",
+          "tableFrom": "quiz_questions",
+          "tableTo": "questions",
+          "columnsFrom": [
+            "question_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "experience_favorites_experience_id_user_id_pk": {
-          "columns": ["experience_id", "user_id"],
-          "name": "experience_favorites_experience_id_user_id_pk"
+        "quiz_questions_quiz_id_question_id_pk": {
+          "columns": [
+            "quiz_id",
+            "question_id"
+          ],
+          "name": "quiz_questions_quiz_id_question_id_pk"
         }
       },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "experience_tags": {
-      "name": "experience_tags",
-      "columns": {
-        "experience_id": {
-          "name": "experience_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tag_id": {
-          "name": "tag_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "experience_tags_experience_id_idx": {
-          "name": "experience_tags_experience_id_idx",
-          "columns": ["experience_id"],
-          "isUnique": false
-        },
-        "experience_tags_tag_id_idx": {
-          "name": "experience_tags_tag_id_idx",
-          "columns": ["tag_id"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "experience_tags_experience_id_experiences_id_fk": {
-          "name": "experience_tags_experience_id_experiences_id_fk",
-          "tableFrom": "experience_tags",
-          "tableTo": "experiences",
-          "columnsFrom": ["experience_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "experience_tags_tag_id_tags_id_fk": {
-          "name": "experience_tags_tag_id_tags_id_fk",
-          "tableFrom": "experience_tags",
-          "tableTo": "tags",
-          "columnsFrom": ["tag_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "experience_tags_experience_id_tag_id_pk": {
-          "columns": ["experience_id", "tag_id"],
-          "name": "experience_tags_experience_id_tag_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "experiences": {
-      "name": "experiences",
+    "quizes": {
+      "name": "quizes",
       "columns": {
         "id": {
           "name": "id",
@@ -489,27 +375,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "scheduled_at": {
-          "name": "scheduled_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "url": {
-          "name": "url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "image_url": {
           "name": "image_url",
           "type": "text",
@@ -517,8 +382,97 @@
           "notNull": false,
           "autoincrement": false
         },
-        "location": {
-          "name": "location",
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "public": {
+          "name": "public",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "quizes_owner_id_idx": {
+          "name": "quizes_owner_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "quizes_user_id_users_id_fk": {
+          "name": "quizes_user_id_users_id_fk",
+          "tableFrom": "quizes",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "questions": {
+      "name": "questions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "quiz_id": {
+          "name": "quiz_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "question_type": {
+          "name": "question_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "spotify_id": {
+          "name": "spotify_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "timestamp": {
+          "name": "timestamp",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -547,19 +501,45 @@
         }
       },
       "indexes": {
-        "experiences_user_id_idx": {
-          "name": "experiences_user_id_idx",
-          "columns": ["user_id"],
+        "questions_quiz_id_idx": {
+          "name": "questions_quiz_id_idx",
+          "columns": [
+            "quiz_id"
+          ],
+          "isUnique": false
+        },
+        "questions_user_id_idx": {
+          "name": "questions_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "experiences_user_id_users_id_fk": {
-          "name": "experiences_user_id_users_id_fk",
-          "tableFrom": "experiences",
+        "questions_quiz_id_quizes_id_fk": {
+          "name": "questions_quiz_id_quizes_id_fk",
+          "tableFrom": "questions",
+          "tableTo": "quizes",
+          "columnsFrom": [
+            "quiz_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "questions_user_id_users_id_fk": {
+          "name": "questions_user_id_users_id_fk",
+          "tableFrom": "questions",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -593,15 +573,8 @@
           "autoincrement": false,
           "default": false
         },
-        "comment_id": {
-          "name": "comment_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "experience_id": {
-          "name": "experience_id",
+        "quiz_id": {
+          "name": "quiz_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -630,43 +603,39 @@
         }
       },
       "indexes": {
-        "notifications_experience_id_idx": {
-          "name": "notifications_experience_id_idx",
-          "columns": ["experience_id"],
-          "isUnique": false
-        },
-        "notifications_comment_id_idx": {
-          "name": "notifications_comment_id_idx",
-          "columns": ["comment_id"],
+        "notifications_quiz_id_idx": {
+          "name": "notifications_quiz_id_idx",
+          "columns": [
+            "quiz_id"
+          ],
           "isUnique": false
         },
         "notifications_from_user_id_idx": {
           "name": "notifications_from_user_id_idx",
-          "columns": ["from_user_id"],
+          "columns": [
+            "from_user_id"
+          ],
           "isUnique": false
         },
         "notifications_user_id_idx": {
           "name": "notifications_user_id_idx",
-          "columns": ["user_id"],
+          "columns": [
+            "user_id"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "notifications_comment_id_comments_id_fk": {
-          "name": "notifications_comment_id_comments_id_fk",
+        "notifications_quiz_id_quizes_id_fk": {
+          "name": "notifications_quiz_id_quizes_id_fk",
           "tableFrom": "notifications",
-          "tableTo": "comments",
-          "columnsFrom": ["comment_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "notifications_experience_id_experiences_id_fk": {
-          "name": "notifications_experience_id_experiences_id_fk",
-          "tableFrom": "notifications",
-          "tableTo": "experiences",
-          "columnsFrom": ["experience_id"],
-          "columnsTo": ["id"],
+          "tableTo": "quizes",
+          "columnsFrom": [
+            "quiz_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -674,8 +643,12 @@
           "name": "notifications_from_user_id_users_id_fk",
           "tableFrom": "notifications",
           "tableTo": "users",
-          "columnsFrom": ["from_user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "from_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -683,61 +656,16 @@
           "name": "notifications_user_id_users_id_fk",
           "tableFrom": "notifications",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "tags": {
-      "name": "tags",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "tags_name_unique": {
-          "name": "tags_name_unique",
-          "columns": ["name"],
-          "isUnique": true
-        },
-        "tags_name_idx": {
-          "name": "tags_name_idx",
-          "columns": ["name"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

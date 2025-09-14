@@ -4,6 +4,7 @@ import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import {
   createTRPCQueryUtils,
   createTRPCReact,
+  getQueryKey,
   httpBatchLink,
   httpLink,
   isNonJsonSerializable,
@@ -22,6 +23,18 @@ import { routeTree } from "./routeTree.gen";
 export const queryClient = new QueryClient();
 
 export const trpc = createTRPCReact<AppRouter>();
+
+function getHeaders() {
+  const queryKey = getQueryKey(trpc.auth.currentUser);
+  const accessToken = queryClient.getQueryData<{ accessToken: string }>(
+    queryKey,
+  )?.accessToken;
+  console.log(accessToken);
+
+  return {
+    Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
+  };
+}
 
 const customLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) => {
@@ -53,6 +66,7 @@ const linkSettings: LinkOptions = {
       credentials: "include",
     });
   },
+  headers: getHeaders(),
 };
 
 const trpcClient = trpc.createClient({

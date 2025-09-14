@@ -1,8 +1,9 @@
-import { SpotifyToken, SpotifyUser } from "@music-quiz/shared/schema/auth";
 import { TRPCError } from "@trpc/server";
 
 import { env } from "@/utils/env";
 import { isTrpcError } from "@/utils/trpc";
+
+import { SpotifyToken, SpotifyUser } from "./models";
 
 export abstract class Spotify {
   static auth(spotifyToken: SpotifyToken) {
@@ -103,10 +104,15 @@ class SpotifyWithAuth {
 
   async refreshToken(): Promise<SpotifyToken> {
     const refreshToken = this.spotifyToken.refresh_token;
+    const authString = btoa(
+      `${env.SPOTIFY_CLIENT_ID}:${env.SPOTIFY_CLIENT_SECRET}`,
+    );
+
     const response = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${authString}`,
       },
       body: new URLSearchParams({
         grant_type: "refresh_token",
@@ -137,13 +143,5 @@ class SpotifyWithAuth {
       } as SpotifyToken;
     }
     return refreshedToken;
-  }
-
-  async verifyToken(): Promise<boolean> {
-    // if the token will expire in less than 60 seconds, it's invalid
-    return (
-      this.spotifyToken.iat + this.spotifyToken.expires_in >
-      Date.now() / 1000 + 60
-    );
   }
 }

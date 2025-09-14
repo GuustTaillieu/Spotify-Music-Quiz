@@ -12,17 +12,17 @@ import {
 } from "lucide-react";
 
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { CreateQuizButton } from "@/features/quiz/components/create-quiz-button";
+import { QuizSwitcher } from "@/features/quiz/components/quiz-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/features/shared/components/ui/sidebar";
 
-import { NavMain } from "./nav-main";
-import { QuizSwitcher } from "./quiz-switcher";
+import { SidebarItems } from "./sidebar-items";
 import { UserButton } from "./user-button";
 
 // This is sample data.
@@ -148,21 +148,23 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const currentUser = useCurrentUser();
+  const { currentUser } = useCurrentUser();
+  const { open } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {currentUser ? (
-          <QuizSwitcher quizes={data.quizes} />
+        {open ? (
+          <img src="/logo.png" alt="logo" className="max-h-16 w-max" />
         ) : (
-          <CreateQuizButton />
+          <img src="/logo.png" alt="logo icon" className="size-8" />
         )}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <SidebarItems items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="flex flex-col gap-2">
+        {currentUser && <QuizSwitcher user={currentUser} />}
         <UserButton />
       </SidebarFooter>
       <SidebarRail />

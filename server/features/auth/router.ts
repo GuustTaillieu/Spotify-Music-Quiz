@@ -1,15 +1,15 @@
-import {
-  SpotifyToken,
-  spotifyUserSchema,
-} from "@music-quiz/shared/schema/auth";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { log } from "console";
+import { eq } from "drizzle-orm";
+import { z } from "zod/v4";
 
+import { db } from "@/database";
 import { ACCESS_TOKEN_KEY, SPOTIFY_STATE_KEY } from "@/utils/constants";
 import { randomString } from "@/utils/random";
 
 import { protectedProcedure, publicProcedure, router } from "../../trpc";
 import { Spotify } from "../spotify";
+import { userSchema, usersTable } from "../user/models";
 import { auth } from "./index";
 
 export const authRouter = router({
@@ -32,7 +32,7 @@ export const authRouter = router({
         state: z.string(),
       }),
     )
-    .output(spotifyUserSchema)
+    .output(z.object({ currentUser: userSchema, accessToken: z.string() }))
     .query(async ({ ctx, input: { state, code } }) => {
       const originalState = ctx.req.cookies[SPOTIFY_STATE_KEY];
       if (state !== originalState) {
@@ -42,11 +42,34 @@ export const authRouter = router({
         });
       }
       ctx.res.clearCookie(SPOTIFY_STATE_KEY);
+      log(code);
       const token = await Spotify.getToken(code);
 
-      const accessToken = auth.createToken<SpotifyToken>(token, {
-        expiresIn: "1h",
+      const accessToken = auth.createToken(token, {
+        expiresIn: "55m",
       });
+
+      const spotifyUser = await Spotify.auth(token).getMe();
+
+      // only create user if it doesn't exist
+      let localUser = await db.query.usersTable.findFirst({
+        where: eq(usersTable.spotifyId, spotifyUser.id),
+      });
+
+      if (!localUser) {
+        const [newUser] = await db
+          .insert(usersTable)
+          .values({
+            spotifyId: spotifyUser.id,
+            name: spotifyUser.display_name,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          })
+          .returning();
+        localUser = newUser;
+      }
+
+      const currentUser = { ...spotifyUser, ...localUser };
 
       ctx.res.cookie(ACCESS_TOKEN_KEY, accessToken, {
         httpOnly: true,
@@ -55,9 +78,7 @@ export const authRouter = router({
         partitioned: true,
       });
 
-      const user = await Spotify.auth(token).getMe();
-
-      return user;
+      return { currentUser, accessToken };
     }),
 
   logout: protectedProcedure.mutation(async ({ ctx }) => {
@@ -66,14 +87,17 @@ export const authRouter = router({
   }),
 
   currentUser: publicProcedure
-    .output(spotifyUserSchema.nullable())
-    .query(async ({ ctx }) => {
-      if (!ctx.spotifyToken) {
-        return null;
+    .output(
+      z.object({
+        currentUser: userSchema.nullable(),
+        accessToken: z.string().nullable(),
+      }),
+    )
+    .query(({ ctx }) => {
+      if (!ctx.spotifyToken || !ctx.accessToken || !ctx.user) {
+        return { currentUser: null, accessToken: null };
       }
 
-      const user = await Spotify.auth(ctx.spotifyToken).getMe();
-
-      return user;
+      return { currentUser: ctx.user, accessToken: ctx.accessToken };
     }),
 });

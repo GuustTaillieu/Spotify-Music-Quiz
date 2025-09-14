@@ -1,16 +1,14 @@
-import {
-  SpotifyToken,
-  spotifyTokenSchema,
-} from "@music-quiz/shared/schema/auth";
 import { initTRPC, TRPCError } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { eq } from "drizzle-orm";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod/v4";
 
 import { db } from "./database";
 import { auth } from "./features/auth";
-import { CurrentUser, usersTable } from "./features/auth/models";
+import { Token } from "./features/auth/models";
 import { Spotify } from "./features/spotify";
+import { SpotifyToken } from "./features/spotify/models";
+import { User, usersTable } from "./features/user/models";
 import { ACCESS_TOKEN_KEY } from "./utils/constants";
 
 // Context available to all procedures
@@ -24,43 +22,59 @@ export async function createContext(
     req: opts.req,
     res: opts.res,
     spotifyToken: null as SpotifyToken | null,
+    accessToken: null as string | null,
+    user: null as User | null,
   };
 
-  const accessToken = opts.req.cookies[ACCESS_TOKEN_KEY];
+  const authHeader = opts.req.headers.authorization;
 
-  // If no refresh token, return
-  if (!accessToken) {
+  // If no authorization header, return
+  if (!authHeader) {
     return context;
   }
+
+  // Get token from authorization header
+  const token = authHeader.split(" ")[1];
 
   // Verify refresh token
-  const payload = auth.verifyToken<SpotifyToken>(accessToken);
+  let spotifyToken = auth.verifyToken<Token>(token);
 
-  // If refresh token is invalid, return
-  const { data: spotifyToken, success } = spotifyTokenSchema.safeParse(payload);
-  if (!success) {
-    opts.res.clearCookie(ACCESS_TOKEN_KEY);
+  // If the token is invalid, try to get it from cookie
+  if (!spotifyToken) {
+    const accessTokenCookie = opts.req.cookies[ACCESS_TOKEN_KEY];
+    spotifyToken = auth.verifyToken<Token>(accessTokenCookie);
+  }
+
+  // If the token is still invalid, return
+  if (!spotifyToken) {
     return context;
   }
 
-  const isValid = await Spotify.auth(spotifyToken).verifyToken();
+  const isExpired = await auth.isTokenExpired(spotifyToken);
 
-  if (!isValid) {
+  if (isExpired) {
     const newSpotifyToken = await Spotify.auth(spotifyToken).refreshToken();
 
     const newAccessToken = auth.createToken<SpotifyToken>(newSpotifyToken, {
       expiresIn: "1h",
     });
 
-    opts.res.cookie(ACCESS_TOKEN_KEY, newAccessToken, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 60 * 60 * 1000, // 1 hour
-      partitioned: true,
-    });
+    context.spotifyToken = newSpotifyToken;
+    context.accessToken = newAccessToken;
+  } else {
+    context.spotifyToken = spotifyToken;
+    context.accessToken = token;
   }
 
-  context.spotifyToken = spotifyToken;
+  const spotifyUser = await Spotify.auth(context.spotifyToken).getMe();
+  const localUser = await db.query.usersTable.findFirst({
+    where: eq(usersTable.spotifyId, spotifyUser.id),
+  });
+  if (!localUser || !spotifyUser) {
+    return context;
+  }
+
+  context.user = { ...spotifyUser, ...localUser };
 
   return context;
 }
@@ -76,7 +90,7 @@ const t = initTRPC.context<Context>().create({
         zodError:
           // Only show zod errors for bad request errors
           error.code === "BAD_REQUEST" && error.cause instanceof ZodError
-            ? error.cause.flatten()
+            ? z.treeifyError(error.cause)
             : null,
       },
     };
@@ -84,8 +98,8 @@ const t = initTRPC.context<Context>().create({
 });
 
 // Create protected procedure
-const authMiddleware = t.middleware(({ next, ctx }) => {
-  if (!ctx.spotifyToken) {
+const authMiddleware = t.middleware(async ({ next, ctx }) => {
+  if (!ctx.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Not authenticated",
@@ -96,7 +110,8 @@ const authMiddleware = t.middleware(({ next, ctx }) => {
     ctx: {
       ...ctx,
       // Ready to be used in procedures
-      spotifyToken: ctx.spotifyToken as SpotifyToken,
+      spotifyToken: ctx.spotifyToken as Token,
+      user: ctx.user as User,
     },
   });
 });

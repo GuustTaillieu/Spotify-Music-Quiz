@@ -1,7 +1,7 @@
 import {
   createRootRouteWithContext,
-  FileRoutesByPath,
   Outlet,
+  useRouterState,
 } from "@tanstack/react-router";
 
 import { AppSidebar } from "@/features/shared/components/sidebar/app-sidebar";
@@ -14,7 +14,7 @@ import {
 } from "@/features/shared/components/ui/sidebar";
 import { Toaster } from "@/features/shared/components/ui/sonner";
 import { routeNames } from "@/routeNames";
-import { router, trpcQueryUtils } from "@/router";
+import { trpcQueryUtils } from "@/router";
 
 export type RouterAppContext = {
   trpcQueryUtils: typeof trpcQueryUtils;
@@ -25,6 +25,8 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function Root() {
+  const { location } = useRouterState();
+
   return (
     <SidebarProvider>
       <ThemeProvider defaultTheme="dark">
@@ -38,11 +40,7 @@ function Root() {
                 className="mr-2 data-[orientation=vertical]:h-4"
               />
               <h3 className="text-sm font-medium">
-                {
-                  routeNames[
-                    router.state.location.pathname as keyof FileRoutesByPath
-                  ]
-                }
+                {routeNames[location.pathname as keyof typeof routeNames]}
               </h3>
             </div>
           </header>
