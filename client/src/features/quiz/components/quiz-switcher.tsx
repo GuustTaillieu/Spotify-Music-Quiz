@@ -24,18 +24,18 @@ type QuizSwitcherProps = {
 };
 
 export function QuizSwitcher({ user }: QuizSwitcherProps) {
-  const { data, ...quizesQuery } = trpc.quiz.byUserId.useInfiniteQuery(
+  const [{ pages }, quizesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
     { userId: user.id },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
-  const quizes = data?.pages.flatMap((page) => page.quizes);
+  const quizes = pages.flatMap((page) => page.quizes);
 
   const loadMore = () => quizesQuery.fetchNextPage();
 
   if (quizesQuery.isLoading) return <QuizSwitcherLoading />;
-  else if (quizes?.length === 0 || !quizes) return <QuizSwitcherNoQuizes />;
+  else if (quizes.length === 0 || !quizes) return <QuizSwitcherNoQuizes />;
   else return <QuizSwitcherLoaded quizes={quizes} loadMore={loadMore} />;
 }
 

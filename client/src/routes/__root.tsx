@@ -22,6 +22,12 @@ export type RouterAppContext = {
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: Root,
+  beforeLoad: async ({ context: { trpcQueryUtils } }) => {
+    const { currentUser } = await trpcQueryUtils.auth.currentUser.ensureData();
+    if (currentUser) {
+      await trpcQueryUtils.quiz.byUserId.prefetch({ userId: currentUser.id });
+    }
+  },
 });
 
 function Root() {

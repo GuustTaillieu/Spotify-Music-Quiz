@@ -30,7 +30,6 @@ export const auth = {
   },
 
   isTokenExpired: async ({ exp }: { exp: number }) => {
-    console.log(new Date(exp).toISOString(), new Date().toISOString());
-    return exp > Date.now() / 1000 + 60;
+    return exp - Date.now() / 1000 < 60;
   },
 };

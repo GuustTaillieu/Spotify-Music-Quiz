@@ -32,7 +32,7 @@ export const authRouter = router({
         state: z.string(),
       }),
     )
-    .output(z.object({ currentUser: userSchema, accessToken: z.string() }))
+    .output(z.object({ currentUser: userSchema }))
     .query(async ({ ctx, input: { state, code } }) => {
       const originalState = ctx.req.cookies[SPOTIFY_STATE_KEY];
       if (state !== originalState) {
@@ -78,7 +78,7 @@ export const authRouter = router({
         partitioned: true,
       });
 
-      return { currentUser, accessToken };
+      return { currentUser };
     }),
 
   logout: protectedProcedure.mutation(async ({ ctx }) => {
@@ -90,14 +90,13 @@ export const authRouter = router({
     .output(
       z.object({
         currentUser: userSchema.nullable(),
-        accessToken: z.string().nullable(),
       }),
     )
     .query(({ ctx }) => {
-      if (!ctx.spotifyToken || !ctx.accessToken || !ctx.user) {
+      if (!ctx.user) {
         return { currentUser: null, accessToken: null };
       }
 
-      return { currentUser: ctx.user, accessToken: ctx.accessToken };
+      return { currentUser: ctx.user };
     }),
 });

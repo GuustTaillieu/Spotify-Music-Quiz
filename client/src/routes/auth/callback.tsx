@@ -11,6 +11,7 @@ export const Route = createFileRoute("/auth/callback")({
   beforeLoad: async ({ search: { code, state } }) => ({ code, state }),
   loader: async ({ context: { trpcQueryUtils, state, code } }) => {
     await trpcQueryUtils.auth.exchangeToken.prefetch({ code, state });
+    await trpcQueryUtils.auth.currentUser.invalidate();
     return redirect({ to: "/" });
   },
   component: CallbackPage,

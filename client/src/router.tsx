@@ -26,10 +26,10 @@ export const trpc = createTRPCReact<AppRouter>();
 
 function getHeaders() {
   const queryKey = getQueryKey(trpc.auth.currentUser);
+
   const accessToken = queryClient.getQueryData<{ accessToken: string }>(
     queryKey,
   )?.accessToken;
-  console.log(accessToken);
 
   return {
     Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
@@ -121,6 +121,14 @@ declare module "@tanstack/react-router" {
     router: ReturnType<typeof createRouter>;
   }
 }
+
+// For devtools
+declare global {
+  interface Window {
+    __TANSTACK_QUERY_CLIENT__: QueryClient;
+  }
+}
+window.__TANSTACK_QUERY_CLIENT__ = queryClient;
 
 export function isTrpcClientError(
   error: unknown,

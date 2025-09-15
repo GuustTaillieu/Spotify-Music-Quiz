@@ -11,7 +11,6 @@ import { SpotifyToken } from "./features/spotify/models";
 import { User, usersTable } from "./features/user/models";
 import { ACCESS_TOKEN_KEY } from "./utils/constants";
 
-// Context available to all procedures
 type Context = Awaited<ReturnType<typeof createContext>>;
 
 // Create context for each request
@@ -22,7 +21,6 @@ export async function createContext(
     req: opts.req,
     res: opts.res,
     spotifyToken: null as SpotifyToken | null,
-    accessToken: null as string | null,
     user: null as User | null,
   };
 
@@ -33,19 +31,13 @@ export async function createContext(
     return context;
   }
 
-  // Get token from authorization header
-  const token = authHeader.split(" ")[1];
+  // Get token from cookie
+  const token = opts.req.cookies[ACCESS_TOKEN_KEY];
 
-  // Verify refresh token
-  let spotifyToken = auth.verifyToken<Token>(token);
+  // Verify the token
+  const spotifyToken = auth.verifyToken<Token>(token);
 
   // If the token is invalid, try to get it from cookie
-  if (!spotifyToken) {
-    const accessTokenCookie = opts.req.cookies[ACCESS_TOKEN_KEY];
-    spotifyToken = auth.verifyToken<Token>(accessTokenCookie);
-  }
-
-  // If the token is still invalid, return
   if (!spotifyToken) {
     return context;
   }
@@ -53,23 +45,31 @@ export async function createContext(
   const isExpired = await auth.isTokenExpired(spotifyToken);
 
   if (isExpired) {
+    console.log("refreshing token");
+
     const newSpotifyToken = await Spotify.auth(spotifyToken).refreshToken();
 
     const newAccessToken = auth.createToken<SpotifyToken>(newSpotifyToken, {
       expiresIn: "1h",
     });
 
+    opts.res.cookie(ACCESS_TOKEN_KEY, newAccessToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 60 * 60 * 1000, // 1 hour
+      partitioned: true,
+    });
+
     context.spotifyToken = newSpotifyToken;
-    context.accessToken = newAccessToken;
   } else {
     context.spotifyToken = spotifyToken;
-    context.accessToken = token;
   }
 
   const spotifyUser = await Spotify.auth(context.spotifyToken).getMe();
   const localUser = await db.query.usersTable.findFirst({
     where: eq(usersTable.spotifyId, spotifyUser.id),
   });
+
   if (!localUser || !spotifyUser) {
     return context;
   }

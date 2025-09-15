@@ -26,6 +26,9 @@ import {
 } from "./helpers";
 
 export const quizRouter = router({
+  test: publicProcedure.mutation(({ ctx }) => {
+    return ctx.user;
+  }),
   byId: publicProcedure
     .input(z.object({ id: quizesSelectSchema.shape.id }))
     .output(
