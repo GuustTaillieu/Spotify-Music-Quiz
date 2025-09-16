@@ -12,4 +12,4 @@ export const quizFiltersSchema = z.object({
   q: z.string().optional(),
 });
 
-export type ExperienceFilterParams = z.infer<typeof quizFiltersSchema>;
+export type QuizFilterParams = z.infer<typeof quizFiltersSchema>;

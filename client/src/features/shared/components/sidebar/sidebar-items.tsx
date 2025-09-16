@@ -1,3 +1,4 @@
+import { useRouterState } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
 import {
@@ -15,13 +16,25 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/features/shared/components/ui/sidebar";
-import { SidebarItem } from "@/lib/conststants/sidebar-items";
+import { SidebarItem, SidebarItemChild } from "@/lib/conststants/sidebar-items";
+
+import { Link } from "../ui/link";
 
 type SidebarItemsProps = {
   items: SidebarItem[];
 };
 
 export function SidebarItems({ items }: SidebarItemsProps) {
+  const { location } = useRouterState();
+
+  const isItemActive = (item: SidebarItemChild): boolean => {
+    return location.pathname.startsWith(item.url);
+  };
+
+  const isChildItemActive = (item: SidebarItem): boolean => {
+    return item.items.some((subItem) => isItemActive(subItem));
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -30,7 +43,7 @@ export function SidebarItems({ items }: SidebarItemsProps) {
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={item.isActive}
+            defaultOpen={isChildItemActive(item)}
             className="group/collapsible"
           >
             <SidebarMenuItem>
@@ -44,11 +57,16 @@ export function SidebarItems({ items }: SidebarItemsProps) {
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
+                    <SidebarMenuSubItem
+                      key={subItem.title}
+                      className={
+                        isItemActive(subItem) ? "bg-sidebar-accent" : ""
+                      }
+                    >
                       <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
+                        <Link className="hover:no-underline" href={subItem.url}>
+                          {subItem.title}
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

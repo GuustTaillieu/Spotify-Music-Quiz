@@ -5,10 +5,10 @@ import { Button } from "@/features/shared/components/ui/button";
 import { trpc } from "@/router";
 
 export const Route = createFileRoute("/")({
-  component: IndexPage,
+  component: HomePage,
 });
 
-function IndexPage() {
+function HomePage() {
   const { currentUser } = useCurrentUser();
   const mutation = trpc.quiz.test.useMutation();
 

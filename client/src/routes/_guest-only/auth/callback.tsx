@@ -6,7 +6,7 @@ const searchSchema = z.object({
   state: z.string(),
 });
 
-export const Route = createFileRoute("/auth/callback")({
+export const Route = createFileRoute("/_guest-only/auth/callback")({
   validateSearch: searchSchema,
   beforeLoad: async ({ search: { code, state } }) => ({ code, state }),
   loader: async ({ context: { trpcQueryUtils, state, code } }) => {

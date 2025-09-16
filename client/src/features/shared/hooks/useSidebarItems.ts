@@ -23,5 +23,4 @@ export function useSidebarItems({
       variant as keyof typeof sidebarItems.unauthenticated
     ];
   }
-  throw new Error("Invalid authenticated value");
 }

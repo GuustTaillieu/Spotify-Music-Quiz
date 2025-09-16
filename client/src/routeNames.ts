@@ -1,7 +1,12 @@
-import { FileRoutesByPath } from "@tanstack/react-router";
+import { CompleteRecord } from "./lib/utils/typescript";
+import { FileRoutesByFullPath } from "./routeTree.gen";
 
-export const routeNames: Record<keyof FileRoutesByPath, string> = {
+export const routeNames: CompleteRecord<FileRoutesByFullPath, string> = {
   "/": "Home",
-  "/auth/callback": "Callback",
   "/auth/login": "Login",
-} as const;
+  "/auth/callback": "Callback",
+  "/notification/list": "Notifications",
+  "/quiz/create": "Create quiz",
+  "/quiz/search": "Search quiz",
+  "/quiz/favorites": "Favorites",
+};

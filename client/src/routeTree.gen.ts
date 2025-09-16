@@ -9,15 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as GuestOnlyRouteRouteImport } from './routes/_guest-only/route'
+import { Route as AuthorizedOnlyRouteRouteImport } from './routes/_authorized-only/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
-import { Route as AuthedNotificationsRouteImport } from './routes/_authed/notifications'
-import { Route as AuthedQuizCreateRouteImport } from './routes/_authed/quiz/create'
+import { Route as GuestOnlyAuthLoginRouteImport } from './routes/_guest-only/auth/login'
+import { Route as GuestOnlyAuthCallbackRouteImport } from './routes/_guest-only/auth/callback'
+import { Route as AuthorizedOnlyQuizFavoritesRouteImport } from './routes/_authorized-only/quiz/favorites'
+import { Route as AuthorizedOnlyQuizCreateRouteImport } from './routes/_authorized-only/quiz/create'
+import { Route as AuthorizedOnlyNotificationListRouteImport } from './routes/_authorized-only/notification/list'
+import { Route as AuthenticatedOrGuestQuizSearchRouteImport } from './routes/_authenticated-or-guest/quiz/search'
 
-const AuthedRouteRoute = AuthedRouteRouteImport.update({
-  id: '/_authed',
+const GuestOnlyRouteRoute = GuestOnlyRouteRouteImport.update({
+  id: '/_guest-only',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthorizedOnlyRouteRoute = AuthorizedOnlyRouteRouteImport.update({
+  id: '/_authorized-only',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,84 +32,124 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
+const GuestOnlyAuthLoginRoute = GuestOnlyAuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => GuestOnlyRouteRoute,
 } as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
+const GuestOnlyAuthCallbackRoute = GuestOnlyAuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => GuestOnlyRouteRoute,
 } as any)
-const AuthedNotificationsRoute = AuthedNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedQuizCreateRoute = AuthedQuizCreateRouteImport.update({
-  id: '/quiz/create',
-  path: '/quiz/create',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
+const AuthorizedOnlyQuizFavoritesRoute =
+  AuthorizedOnlyQuizFavoritesRouteImport.update({
+    id: '/quiz/favorites',
+    path: '/quiz/favorites',
+    getParentRoute: () => AuthorizedOnlyRouteRoute,
+  } as any)
+const AuthorizedOnlyQuizCreateRoute =
+  AuthorizedOnlyQuizCreateRouteImport.update({
+    id: '/quiz/create',
+    path: '/quiz/create',
+    getParentRoute: () => AuthorizedOnlyRouteRoute,
+  } as any)
+const AuthorizedOnlyNotificationListRoute =
+  AuthorizedOnlyNotificationListRouteImport.update({
+    id: '/notification/list',
+    path: '/notification/list',
+    getParentRoute: () => AuthorizedOnlyRouteRoute,
+  } as any)
+const AuthenticatedOrGuestQuizSearchRoute =
+  AuthenticatedOrGuestQuizSearchRouteImport.update({
+    id: '/_authenticated-or-guest/quiz/search',
+    path: '/quiz/search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/notifications': typeof AuthedNotificationsRoute
-  '/auth/callback': typeof AuthCallbackRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/quiz/create': typeof AuthedQuizCreateRoute
+  '/quiz/search': typeof AuthenticatedOrGuestQuizSearchRoute
+  '/notification/list': typeof AuthorizedOnlyNotificationListRoute
+  '/quiz/create': typeof AuthorizedOnlyQuizCreateRoute
+  '/quiz/favorites': typeof AuthorizedOnlyQuizFavoritesRoute
+  '/auth/callback': typeof GuestOnlyAuthCallbackRoute
+  '/auth/login': typeof GuestOnlyAuthLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/notifications': typeof AuthedNotificationsRoute
-  '/auth/callback': typeof AuthCallbackRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/quiz/create': typeof AuthedQuizCreateRoute
+  '/quiz/search': typeof AuthenticatedOrGuestQuizSearchRoute
+  '/notification/list': typeof AuthorizedOnlyNotificationListRoute
+  '/quiz/create': typeof AuthorizedOnlyQuizCreateRoute
+  '/quiz/favorites': typeof AuthorizedOnlyQuizFavoritesRoute
+  '/auth/callback': typeof GuestOnlyAuthCallbackRoute
+  '/auth/login': typeof GuestOnlyAuthLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authed': typeof AuthedRouteRouteWithChildren
-  '/_authed/notifications': typeof AuthedNotificationsRoute
-  '/auth/callback': typeof AuthCallbackRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/_authed/quiz/create': typeof AuthedQuizCreateRoute
+  '/_authorized-only': typeof AuthorizedOnlyRouteRouteWithChildren
+  '/_guest-only': typeof GuestOnlyRouteRouteWithChildren
+  '/_authenticated-or-guest/quiz/search': typeof AuthenticatedOrGuestQuizSearchRoute
+  '/_authorized-only/notification/list': typeof AuthorizedOnlyNotificationListRoute
+  '/_authorized-only/quiz/create': typeof AuthorizedOnlyQuizCreateRoute
+  '/_authorized-only/quiz/favorites': typeof AuthorizedOnlyQuizFavoritesRoute
+  '/_guest-only/auth/callback': typeof GuestOnlyAuthCallbackRoute
+  '/_guest-only/auth/login': typeof GuestOnlyAuthLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/notifications'
+    | '/quiz/search'
+    | '/notification/list'
+    | '/quiz/create'
+    | '/quiz/favorites'
     | '/auth/callback'
     | '/auth/login'
-    | '/quiz/create'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/notifications' | '/auth/callback' | '/auth/login' | '/quiz/create'
+  to:
+    | '/'
+    | '/quiz/search'
+    | '/notification/list'
+    | '/quiz/create'
+    | '/quiz/favorites'
+    | '/auth/callback'
+    | '/auth/login'
   id:
     | '__root__'
     | '/'
-    | '/_authed'
-    | '/_authed/notifications'
-    | '/auth/callback'
-    | '/auth/login'
-    | '/_authed/quiz/create'
+    | '/_authorized-only'
+    | '/_guest-only'
+    | '/_authenticated-or-guest/quiz/search'
+    | '/_authorized-only/notification/list'
+    | '/_authorized-only/quiz/create'
+    | '/_authorized-only/quiz/favorites'
+    | '/_guest-only/auth/callback'
+    | '/_guest-only/auth/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
-  AuthCallbackRoute: typeof AuthCallbackRoute
-  AuthLoginRoute: typeof AuthLoginRoute
+  AuthorizedOnlyRouteRoute: typeof AuthorizedOnlyRouteRouteWithChildren
+  GuestOnlyRouteRoute: typeof GuestOnlyRouteRouteWithChildren
+  AuthenticatedOrGuestQuizSearchRoute: typeof AuthenticatedOrGuestQuizSearchRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_authed': {
-      id: '/_authed'
+    '/_guest-only': {
+      id: '/_guest-only'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof AuthedRouteRouteImport
+      preLoaderRoute: typeof GuestOnlyRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authorized-only': {
+      id: '/_authorized-only'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthorizedOnlyRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -112,56 +159,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/login': {
-      id: '/auth/login'
+    '/_guest-only/auth/login': {
+      id: '/_guest-only/auth/login'
       path: '/auth/login'
       fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof GuestOnlyAuthLoginRouteImport
+      parentRoute: typeof GuestOnlyRouteRoute
     }
-    '/auth/callback': {
-      id: '/auth/callback'
+    '/_guest-only/auth/callback': {
+      id: '/_guest-only/auth/callback'
       path: '/auth/callback'
       fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof GuestOnlyAuthCallbackRouteImport
+      parentRoute: typeof GuestOnlyRouteRoute
     }
-    '/_authed/notifications': {
-      id: '/_authed/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthedNotificationsRouteImport
-      parentRoute: typeof AuthedRouteRoute
+    '/_authorized-only/quiz/favorites': {
+      id: '/_authorized-only/quiz/favorites'
+      path: '/quiz/favorites'
+      fullPath: '/quiz/favorites'
+      preLoaderRoute: typeof AuthorizedOnlyQuizFavoritesRouteImport
+      parentRoute: typeof AuthorizedOnlyRouteRoute
     }
-    '/_authed/quiz/create': {
-      id: '/_authed/quiz/create'
+    '/_authorized-only/quiz/create': {
+      id: '/_authorized-only/quiz/create'
       path: '/quiz/create'
       fullPath: '/quiz/create'
-      preLoaderRoute: typeof AuthedQuizCreateRouteImport
-      parentRoute: typeof AuthedRouteRoute
+      preLoaderRoute: typeof AuthorizedOnlyQuizCreateRouteImport
+      parentRoute: typeof AuthorizedOnlyRouteRoute
+    }
+    '/_authorized-only/notification/list': {
+      id: '/_authorized-only/notification/list'
+      path: '/notification/list'
+      fullPath: '/notification/list'
+      preLoaderRoute: typeof AuthorizedOnlyNotificationListRouteImport
+      parentRoute: typeof AuthorizedOnlyRouteRoute
+    }
+    '/_authenticated-or-guest/quiz/search': {
+      id: '/_authenticated-or-guest/quiz/search'
+      path: '/quiz/search'
+      fullPath: '/quiz/search'
+      preLoaderRoute: typeof AuthenticatedOrGuestQuizSearchRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AuthedRouteRouteChildren {
-  AuthedNotificationsRoute: typeof AuthedNotificationsRoute
-  AuthedQuizCreateRoute: typeof AuthedQuizCreateRoute
+interface AuthorizedOnlyRouteRouteChildren {
+  AuthorizedOnlyNotificationListRoute: typeof AuthorizedOnlyNotificationListRoute
+  AuthorizedOnlyQuizCreateRoute: typeof AuthorizedOnlyQuizCreateRoute
+  AuthorizedOnlyQuizFavoritesRoute: typeof AuthorizedOnlyQuizFavoritesRoute
 }
 
-const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
-  AuthedNotificationsRoute: AuthedNotificationsRoute,
-  AuthedQuizCreateRoute: AuthedQuizCreateRoute,
+const AuthorizedOnlyRouteRouteChildren: AuthorizedOnlyRouteRouteChildren = {
+  AuthorizedOnlyNotificationListRoute: AuthorizedOnlyNotificationListRoute,
+  AuthorizedOnlyQuizCreateRoute: AuthorizedOnlyQuizCreateRoute,
+  AuthorizedOnlyQuizFavoritesRoute: AuthorizedOnlyQuizFavoritesRoute,
 }
 
-const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
-  AuthedRouteRouteChildren,
+const AuthorizedOnlyRouteRouteWithChildren =
+  AuthorizedOnlyRouteRoute._addFileChildren(AuthorizedOnlyRouteRouteChildren)
+
+interface GuestOnlyRouteRouteChildren {
+  GuestOnlyAuthCallbackRoute: typeof GuestOnlyAuthCallbackRoute
+  GuestOnlyAuthLoginRoute: typeof GuestOnlyAuthLoginRoute
+}
+
+const GuestOnlyRouteRouteChildren: GuestOnlyRouteRouteChildren = {
+  GuestOnlyAuthCallbackRoute: GuestOnlyAuthCallbackRoute,
+  GuestOnlyAuthLoginRoute: GuestOnlyAuthLoginRoute,
+}
+
+const GuestOnlyRouteRouteWithChildren = GuestOnlyRouteRoute._addFileChildren(
+  GuestOnlyRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthedRouteRoute: AuthedRouteRouteWithChildren,
-  AuthCallbackRoute: AuthCallbackRoute,
-  AuthLoginRoute: AuthLoginRoute,
+  AuthorizedOnlyRouteRoute: AuthorizedOnlyRouteRouteWithChildren,
+  GuestOnlyRouteRoute: GuestOnlyRouteRouteWithChildren,
+  AuthenticatedOrGuestQuizSearchRoute: AuthenticatedOrGuestQuizSearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

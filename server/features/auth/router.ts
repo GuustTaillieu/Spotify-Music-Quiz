@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { log } from "console";
 import { eq } from "drizzle-orm";
 import { z } from "zod/v4";
 
@@ -42,7 +41,6 @@ export const authRouter = router({
         });
       }
       ctx.res.clearCookie(SPOTIFY_STATE_KEY);
-      log(code);
       const token = await Spotify.getToken(code);
 
       const accessToken = auth.createToken(token, {

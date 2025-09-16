@@ -34,8 +34,8 @@ function Root() {
   const { location } = useRouterState();
 
   return (
-    <SidebarProvider>
-      <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="dark">
+      <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
           <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear">
@@ -52,8 +52,8 @@ function Root() {
           </header>
           <Outlet />
         </SidebarInset>
-        <Toaster />
-      </ThemeProvider>
-    </SidebarProvider>
+      </SidebarProvider>
+      <Toaster />
+    </ThemeProvider>
   );
 }

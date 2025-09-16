@@ -6,32 +6,39 @@ import {
   SquareTerminal,
 } from "lucide-react";
 
+import { FileRoutesByFullPath } from "@/routeTree.gen";
+
 export type SidebarItem = {
   title: string;
-  url: string;
-  icon?: LucideIcon;
-  isActive?: boolean;
-  items?: SidebarItem[];
+  icon: LucideIcon;
+  items: SidebarItemChild[];
+};
+
+export type SidebarItemChild = {
+  title: string;
+  url: keyof FileRoutesByFullPath;
 };
 
 type SidebarAuth = "unauthenticated" | "authenticated";
 
-export const sidebarItems = {
+type SidebarGroups = Record<
+  SidebarAuth,
+  {
+    default: SidebarItem[];
+    [key: string]: SidebarItem[];
+  }
+>;
+
+export const sidebarItems: SidebarGroups = {
   unauthenticated: {
     default: [
       {
-        title: "Explore",
-        url: "#",
+        title: "Explore quizzes",
         icon: BookOpen,
-        isActive: true,
         items: [
           {
-            title: "History",
-            url: "#",
-          },
-          {
-            title: "Starred",
-            url: "#",
+            title: "Favorites",
+            url: "/quiz/favorites",
           },
         ],
       },
@@ -40,48 +47,52 @@ export const sidebarItems = {
   authenticated: {
     default: [
       {
-        title: "Explore",
-        url: "#",
+        title: "Explore quizzes",
+        url: "/",
         icon: BookOpen,
-        isActive: true,
         items: [
           {
-            title: "History",
-            url: "#",
-          },
-          {
-            title: "Starred",
-            url: "#",
+            title: "Favorites",
+            url: "/quiz/favorites",
           },
         ],
       },
       {
         title: "Friends",
-        url: "#",
         icon: PersonStanding,
+        items: [
+          {
+            title: "Following",
+            url: "/user/following",
+          },
+          {
+            title: "Followers",
+            url: "/user/followers",
+          },
+        ],
       },
     ],
     smith: [
       {
         title: "Build",
-        url: "#",
+        url: "/",
         icon: SquareTerminal,
       },
       {
         title: "Overview",
-        url: "#",
+        url: "/",
         icon: ScanEye,
       },
       {
         title: "Documentation",
-        url: "#",
+        url: "/",
         icon: BookOpen,
       },
       {
         title: "Settings",
-        url: "#",
+        url: "/",
         icon: SquareTerminal,
       },
     ],
   },
-} as const satisfies Record<SidebarAuth, Record<string, SidebarItem[]>>;
+} satisfies SidebarGroups;
