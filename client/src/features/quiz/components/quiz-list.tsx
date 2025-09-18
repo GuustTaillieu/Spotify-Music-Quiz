@@ -15,7 +15,7 @@ const QuizList = ({
   noQuizesMessage = "No quizes found",
 }: QuizListProps) => {
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5">
       {quizes.map((quiz) => (
         <QuizCard key={quiz.id} quiz={quiz} />
       ))}

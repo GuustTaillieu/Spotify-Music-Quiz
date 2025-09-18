@@ -1,6 +1,6 @@
 import { User } from "@music-quiz/server/database/schema";
 import { Bell, ChevronsUpDown, LoaderIcon, LogIn, LogOut } from "lucide-react";
-import { useEffect } from "react";
+import { ComponentProps, useEffect } from "react";
 import { toast } from "sonner";
 
 import { useAuthMutations } from "@/features/auth/hooks/useAuthMutations";
@@ -20,16 +20,15 @@ import {
   DropdownMenuTrigger,
 } from "@/features/shared/components/ui/dropdown-menu";
 import {
-  SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
   useSidebar,
 } from "@/features/shared/components/ui/sidebar";
+import { cn } from "@/lib/utils/cn";
 import { router } from "@/router";
 
-type UserButtonProps = {};
+type UserButtonProps = {} & ComponentProps<typeof SidebarMenuButton>;
 
-export function UserButton({}: UserButtonProps) {
+export function UserButton({ ...props }: UserButtonProps) {
   const { currentUser, isLoading } = useCurrentUser();
 
   useEffect(() => {
@@ -38,76 +37,84 @@ export function UserButton({}: UserButtonProps) {
     }
   }, [currentUser]);
 
-  if (currentUser) return <UserButtonSignedIn currentUser={currentUser} />;
-  else if (isLoading) return <UserButtonLoading />;
-  else return <UserButtonNotSignedIn />;
+  if (currentUser)
+    return <UserButtonSignedIn currentUser={currentUser} {...props} />;
+  else if (isLoading) return <UserButtonLoading {...props} />;
+  else return <UserButtonNotSignedIn {...props} />;
 }
 
-type UserButtonLoadingProps = {};
+type UserButtonLoadingProps = UserButtonProps & {};
 
-function UserButtonLoading({}: UserButtonLoadingProps) {
+function UserButtonLoading({ className, ...props }: UserButtonLoadingProps) {
   const { isMobile } = useSidebar();
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus-visible:ring-0"
-            >
-              <LoaderIcon className="h-8 w-8 rounded-lg" />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Loading...</span>
-                <span className="truncate text-xs">
-                  Please wait while we load your profile
-                </span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          />
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton
+          size="lg"
+          className={cn(
+            "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus-visible:ring-0",
+            className,
+          )}
+          {...props}
+        >
+          <LoaderIcon className="h-8 w-8 rounded-lg" />
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">Loading...</span>
+            <span className="truncate text-xs">
+              Please wait while we load your profile
+            </span>
+          </div>
+          <ChevronsUpDown className="ml-auto size-4" />
+        </SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+        side={isMobile ? "bottom" : "right"}
+        align="end"
+        sideOffset={4}
+      />
+    </DropdownMenu>
   );
 }
 
-type UserButtonNotSignedInProps = {};
+type UserButtonNotSignedInProps = UserButtonProps & {};
 
-function UserButtonNotSignedIn({}: UserButtonNotSignedInProps) {
+function UserButtonNotSignedIn({
+  className,
+  ...props
+}: UserButtonNotSignedInProps) {
   const handleLogin = () => router.navigate({ to: "/auth/login" });
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          onClick={handleLogin}
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus-visible:ring-0"
-        >
-          <LogIn className="mr-2 h-8 w-8 rounded-lg" />
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">Sign in</span>
-            <span className="truncate text-xs">Click here to get started</span>
-          </div>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <SidebarMenuButton
+      onClick={handleLogin}
+      size="lg"
+      className={cn(
+        "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus-visible:ring-0",
+        className,
+      )}
+      {...props}
+    >
+      <LogIn className="mr-2 h-8 w-8 rounded-lg" />
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-medium">Sign in</span>
+        <span className="truncate text-xs">Click here to get started</span>
+      </div>
+    </SidebarMenuButton>
   );
 }
 
-type UserButtonSignedInProps = {
+type UserButtonSignedInProps = UserButtonProps & {
   currentUser: User;
 };
 
-function UserButtonSignedIn({ currentUser }: UserButtonSignedInProps) {
+function UserButtonSignedIn({
+  currentUser,
+  className,
+  ...props
+}: UserButtonSignedInProps) {
   const { isMobile } = useSidebar();
   const { logoutMutation } = useAuthMutations({
     logout: {
@@ -120,69 +127,61 @@ function UserButtonSignedIn({ currentUser }: UserButtonSignedInProps) {
   const handleLogout = () => logoutMutation.mutate();
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus-visible:ring-0"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={currentUser.images[0].url}
-                  alt={currentUser.name}
-                />
-                <AvatarFallback className="rounded-lg">
-                  {currentUser?.name.slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{currentUser.name}</span>
-                <span className="truncate text-xs">{currentUser.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenuButton
+          size="lg"
+          className={cn(
+            "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus-visible:ring-0",
+            className,
+          )}
+          {...props}
+        >
+          <Avatar className="h-8 w-8 rounded-lg">
+            <AvatarImage src={currentUser.imageUrl} alt={currentUser.name} />
+            <AvatarFallback className="rounded-lg">
+              {currentUser?.name.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{currentUser.name}</span>
+            <span className="truncate text-xs">{currentUser.email}</span>
+          </div>
+          <ChevronsUpDown className="ml-auto size-4" />
+        </SidebarMenuButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+        side={isMobile ? "bottom" : "right"}
+        align="end"
+        sideOffset={4}
+      >
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarImage src={currentUser.imageUrl} alt={currentUser.name} />
+              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{currentUser.name}</span>
+              <span className="truncate text-xs">{currentUser.email}</span>
+            </div>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() => router.navigate({ to: "/notification/list" })}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={currentUser.images[0].url}
-                    alt={currentUser.name}
-                  />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {currentUser.name}
-                  </span>
-                  <span className="truncate text-xs">{currentUser.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => router.navigate({ to: "/notifications" })}
-              >
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            <Bell />
+            Notifications
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

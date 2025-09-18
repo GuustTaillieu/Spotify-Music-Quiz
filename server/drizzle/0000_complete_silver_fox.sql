@@ -11,6 +11,7 @@ CREATE TABLE `users` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`spotifyId` text NOT NULL,
 	`name` text NOT NULL,
+	`imageUrl` text NOT NULL,
 	`createdAt` text NOT NULL,
 	`updatedAt` text NOT NULL
 );
@@ -59,7 +60,7 @@ CREATE TABLE `quizes` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `quizes_owner_id_idx` ON `quizes` (`user_id`);--> statement-breakpoint
+CREATE INDEX `quizes_user_id_idx` ON `quizes` (`user_id`);--> statement-breakpoint
 CREATE TABLE `questions` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`quiz_id` integer NOT NULL,

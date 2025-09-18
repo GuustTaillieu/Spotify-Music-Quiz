@@ -21,10 +21,12 @@ export const QuizCard = ({ quiz }: QuizCardProps) => {
       <QuizCardMedia quiz={quiz} />
       <div className="flex items-start gap-4 p-4">
         <QuizCardAvatar quiz={quiz} />
-        <div className="w-full space-y-4">
+        <div className="flex flex-col gap-4">
           <QuizCardHeader quiz={quiz} />
-          <QuizCardMetricButtons quiz={quiz} />
-          <QuizCardActionButtons quiz={quiz} />
+          <div className="-ml-4">
+            <QuizCardMetricButtons quiz={quiz} />
+            <QuizCardActionButtons quiz={quiz} />
+          </div>
         </div>
       </div>
     </Card>
@@ -57,16 +59,17 @@ type QuizCardHeaderProps = Pick<QuizCardProps, "quiz">;
 
 const QuizCardHeader = ({ quiz }: QuizCardHeaderProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       <Link
         to="/users/$userId"
         params={{ userId: quiz.user.id }}
         variant="ghost"
+        className="text-sm"
       >
         {quiz.user.name}
       </Link>
       <Link to="/quiz/$quizId" params={{ quizId: quiz.id }}>
-        <h2 className="text-xl font-bold">{quiz.title}</h2>
+        <h2 className="truncate text-xl font-semibold">{quiz.title}</h2>
       </Link>
     </div>
   );
@@ -76,7 +79,7 @@ type QuizCardMetricButtonsProps = Pick<QuizCardProps, "quiz">;
 
 const QuizCardMetricButtons = ({ quiz }: QuizCardMetricButtonsProps) => {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center">
       <QuizFavoriteButton
         quizId={quiz.id}
         isFavorited={quiz.isFavorited}

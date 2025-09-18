@@ -17,7 +17,7 @@ export const quizesTable = sqliteTable(
     title: text("title").notNull(),
     imageUrl: text("image_url"),
 
-    ownerId: int("user_id")
+    userId: int("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
 
@@ -26,7 +26,7 @@ export const quizesTable = sqliteTable(
     createdAt: text("created_at").notNull(),
     updatedAt: text("updated_at").notNull(),
   },
-  (table) => [index("quizes_owner_id_idx").on(table.ownerId)],
+  (table) => [index("quizes_user_id_idx").on(table.userId)],
 );
 
 export const quizesSelectSchema = createSelectSchema(quizesTable);

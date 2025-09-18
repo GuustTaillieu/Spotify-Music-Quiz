@@ -12,8 +12,8 @@ import {
 export const quizesRelations = relations(quizesTable, ({ many, one }) => ({
   attendees: many(quizAttendeesTable),
   notifications: many(notificationsTable),
-  owner: one(usersTable, {
-    fields: [quizesTable.ownerId],
+  user: one(usersTable, {
+    fields: [quizesTable.userId],
     references: [usersTable.id],
   }),
 }));

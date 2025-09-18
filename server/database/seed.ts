@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 
 import {
   notificationsTable,
+  Quiz,
   quizAttendeesTable,
   quizesTable,
   userFollowsTable,
@@ -17,6 +18,7 @@ async function seed() {
     const generatedUsers = Array.from({ length: 5 }).map(() => ({
       name: faker.person.fullName(),
       spotifyId: faker.string.uuid(),
+      imageUrl: faker.image.avatar(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }));
@@ -28,12 +30,17 @@ async function seed() {
     const postUser = users[0];
 
     // Creates fake quizes
-    const generatedQuizes = Array.from({ length: 5 }).map(() => ({
-      title: faker.lorem.slug(),
-      ownerId: postUser.id,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
+    const generatedQuizes = Array.from({ length: 5 }).map(
+      (_, i) =>
+        ({
+          title: faker.lorem.slug(),
+          userId: postUser.id,
+          imageUrl: faker.image.avatar(),
+          public: i < 3,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }) as Quiz,
+    );
     const quizes = await db
       .insert(quizesTable)
       .values(generatedQuizes)
@@ -49,7 +56,7 @@ async function seed() {
         const attendee = shuffledUsers[i];
 
         // Don't attend your own experience
-        if (attendee.id === quiz.ownerId) {
+        if (attendee.id === quiz.userId) {
           continue;
         }
 
@@ -68,11 +75,11 @@ async function seed() {
             })
             .returning();
 
-          // Create notification for the experience owner
+          // Create notification for the experience user
           await db.insert(notificationsTable).values({
             type: "user_attending_quiz",
             quizId: quiz.id,
-            userId: quiz.ownerId,
+            userId: quiz.userId,
             fromUserId: attendee.id,
             createdAt: attendeeRecord.createdAt,
           });

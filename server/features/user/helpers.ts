@@ -21,11 +21,11 @@ export async function getUserFollowingCount(userId: User["id"]) {
   return followingCount?.count ?? 0;
 }
 
-export async function getUserOwnsQuizesCount(ownerId: User["id"]) {
+export async function getUserOwnsQuizesCount(userId: User["id"]) {
   const [ownedQuizesCount] = await db
     .select({ count: count() })
     .from(quizesTable)
-    .where(eq(quizesTable.ownerId, ownerId));
+    .where(eq(quizesTable.userId, userId));
 
   return ownedQuizesCount?.count ?? 0;
 }

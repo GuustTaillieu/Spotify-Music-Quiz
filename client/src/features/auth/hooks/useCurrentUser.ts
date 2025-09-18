@@ -5,7 +5,6 @@ export function useCurrentUser() {
 
   return {
     currentUser: data?.currentUser,
-    accessToken: data?.accessToken,
     ...currentUserQuery,
   };
 }

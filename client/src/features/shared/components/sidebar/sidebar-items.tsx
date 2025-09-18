@@ -28,7 +28,7 @@ export function SidebarItems({ items }: SidebarItemsProps) {
   const { location } = useRouterState();
 
   const isItemActive = (item: SidebarItemChild): boolean => {
-    return location.pathname.startsWith(item.url);
+    return location.pathname == item.url;
   };
 
   const isChildItemActive = (item: SidebarItem): boolean => {

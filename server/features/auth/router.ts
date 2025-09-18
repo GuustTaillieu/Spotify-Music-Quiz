@@ -3,12 +3,16 @@ import { eq } from "drizzle-orm";
 import { z } from "zod/v4";
 
 import { db } from "@/database";
-import { ACCESS_TOKEN_KEY, SPOTIFY_STATE_KEY } from "@/utils/constants";
+import {
+  ACCESS_TOKEN_KEY,
+  ACCESS_TOKEN_TTL,
+  SPOTIFY_STATE_KEY,
+} from "@/utils/constants";
 import { randomString } from "@/utils/random";
 
 import { protectedProcedure, publicProcedure, router } from "../../trpc";
 import { Spotify } from "../spotify";
-import { userSchema, usersTable } from "../user/models";
+import { usersTable, userWithSpotifySchema } from "../user/models";
 import { auth } from "./index";
 
 export const authRouter = router({
@@ -19,7 +23,7 @@ export const authRouter = router({
       ctx.res.cookie(SPOTIFY_STATE_KEY, state, {
         httpOnly: true,
         secure: true,
-        maxAge: 60 * 60 * 1000, // 1 hour
+        maxAge: ACCESS_TOKEN_TTL,
         partitioned: true,
       });
       return Spotify.getAuthUrl(state);
@@ -31,7 +35,7 @@ export const authRouter = router({
         state: z.string(),
       }),
     )
-    .output(z.object({ currentUser: userSchema }))
+    .output(z.object({ currentUser: userWithSpotifySchema }))
     .query(async ({ ctx, input: { state, code } }) => {
       const originalState = ctx.req.cookies[SPOTIFY_STATE_KEY];
       if (state !== originalState) {
@@ -44,7 +48,7 @@ export const authRouter = router({
       const token = await Spotify.getToken(code);
 
       const accessToken = auth.createToken(token, {
-        expiresIn: "55m",
+        expiresIn: ACCESS_TOKEN_TTL,
       });
 
       const spotifyUser = await Spotify.auth(token).getMe();
@@ -60,6 +64,7 @@ export const authRouter = router({
           .values({
             spotifyId: spotifyUser.id,
             name: spotifyUser.display_name,
+            imageUrl: spotifyUser.images[0].url,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           })
@@ -72,7 +77,7 @@ export const authRouter = router({
       ctx.res.cookie(ACCESS_TOKEN_KEY, accessToken, {
         httpOnly: true,
         secure: true,
-        maxAge: 60 * 60 * 1000, // 1 hour
+        maxAge: ACCESS_TOKEN_TTL,
         partitioned: true,
       });
 
@@ -81,13 +86,14 @@ export const authRouter = router({
 
   logout: protectedProcedure.mutation(async ({ ctx }) => {
     ctx.res.clearCookie(ACCESS_TOKEN_KEY);
+    ctx.res.clearCookie(SPOTIFY_STATE_KEY);
     return;
   }),
 
   currentUser: publicProcedure
     .output(
       z.object({
-        currentUser: userSchema.nullable(),
+        currentUser: userWithSpotifySchema.nullable(),
       }),
     )
     .query(({ ctx }) => {

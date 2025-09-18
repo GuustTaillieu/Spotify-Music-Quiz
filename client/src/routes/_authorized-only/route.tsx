@@ -6,11 +6,11 @@ import { sidebarItems } from "@/lib/conststants/sidebar-items";
 
 export const Route = createFileRoute("/_authorized-only")({
   component: RouteComponent,
-  beforeLoad: async ({ context: { trpcQueryUtils } }) => {
-    const currentUser = await trpcQueryUtils.auth.currentUser.ensureData();
+  beforeLoad: async ({ context: { currentUser } }) => {
     if (!currentUser) {
-      return redirect({ to: "/auth/login" });
+      throw redirect({ to: "/auth/login" });
     }
+    return { currentUser };
   },
 });
 

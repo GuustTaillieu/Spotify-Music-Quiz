@@ -33,8 +33,13 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
         <SidebarItems items={menuItems} />
       </SidebarContent>
       <SidebarFooter className="flex flex-col gap-2">
-        {currentUser && <QuizSwitcher user={currentUser} />}
-        <UserButton />
+        {currentUser && (
+          <QuizSwitcher
+            user={currentUser}
+            className="group-data-[collapsible=icon]:p-0!"
+          />
+        )}
+        <UserButton className="group-data-[collapsible=icon]:p-0!" />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

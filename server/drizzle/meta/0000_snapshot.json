@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5f1054f0-d19d-472b-bddd-b6a42f6bb56d",
+  "id": "1c40b716-c142-42bd-89da-e11f8cfc6e7d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "user_follows": {
@@ -35,12 +35,8 @@
           "name": "user_follows_follower_id_users_id_fk",
           "tableFrom": "user_follows",
           "tableTo": "users",
-          "columnsFrom": [
-            "follower_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["follower_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -48,22 +44,15 @@
           "name": "user_follows_following_id_users_id_fk",
           "tableFrom": "user_follows",
           "tableTo": "users",
-          "columnsFrom": [
-            "following_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["following_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "user_follows_follower_id_following_id_pk": {
-          "columns": [
-            "follower_id",
-            "following_id"
-          ],
+          "columns": ["follower_id", "following_id"],
           "name": "user_follows_follower_id_following_id_pk"
         }
       },
@@ -89,6 +78,13 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "imageUrl": {
+          "name": "imageUrl",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -143,16 +139,12 @@
       "indexes": {
         "quiz_attendees_quiz_id_idx": {
           "name": "quiz_attendees_quiz_id_idx",
-          "columns": [
-            "quiz_id"
-          ],
+          "columns": ["quiz_id"],
           "isUnique": false
         },
         "quiz_attendees_user_id_idx": {
           "name": "quiz_attendees_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -161,12 +153,8 @@
           "name": "quiz_attendees_quiz_id_quizes_id_fk",
           "tableFrom": "quiz_attendees",
           "tableTo": "quizes",
-          "columnsFrom": [
-            "quiz_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["quiz_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -174,22 +162,15 @@
           "name": "quiz_attendees_user_id_users_id_fk",
           "tableFrom": "quiz_attendees",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "quiz_attendees_quiz_id_user_id_pk": {
-          "columns": [
-            "quiz_id",
-            "user_id"
-          ],
+          "columns": ["quiz_id", "user_id"],
           "name": "quiz_attendees_quiz_id_user_id_pk"
         }
       },
@@ -224,16 +205,12 @@
       "indexes": {
         "quiz_favorites_quiz_id_idx": {
           "name": "quiz_favorites_quiz_id_idx",
-          "columns": [
-            "quiz_id"
-          ],
+          "columns": ["quiz_id"],
           "isUnique": false
         },
         "quiz_favorites_user_id_idx": {
           "name": "quiz_favorites_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -242,12 +219,8 @@
           "name": "quiz_favorites_quiz_id_quizes_id_fk",
           "tableFrom": "quiz_favorites",
           "tableTo": "quizes",
-          "columnsFrom": [
-            "quiz_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["quiz_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -255,22 +228,15 @@
           "name": "quiz_favorites_user_id_users_id_fk",
           "tableFrom": "quiz_favorites",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "quiz_favorites_quiz_id_user_id_pk": {
-          "columns": [
-            "quiz_id",
-            "user_id"
-          ],
+          "columns": ["quiz_id", "user_id"],
           "name": "quiz_favorites_quiz_id_user_id_pk"
         }
       },
@@ -305,16 +271,12 @@
       "indexes": {
         "quiz_questions_quiz_id_idx": {
           "name": "quiz_questions_quiz_id_idx",
-          "columns": [
-            "quiz_id"
-          ],
+          "columns": ["quiz_id"],
           "isUnique": false
         },
         "quiz_questions_question_id_idx": {
           "name": "quiz_questions_question_id_idx",
-          "columns": [
-            "question_id"
-          ],
+          "columns": ["question_id"],
           "isUnique": false
         }
       },
@@ -323,12 +285,8 @@
           "name": "quiz_questions_quiz_id_quizes_id_fk",
           "tableFrom": "quiz_questions",
           "tableTo": "quizes",
-          "columnsFrom": [
-            "quiz_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["quiz_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -336,22 +294,15 @@
           "name": "quiz_questions_question_id_questions_id_fk",
           "tableFrom": "quiz_questions",
           "tableTo": "questions",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "quiz_questions_quiz_id_question_id_pk": {
-          "columns": [
-            "quiz_id",
-            "question_id"
-          ],
+          "columns": ["quiz_id", "question_id"],
           "name": "quiz_questions_quiz_id_question_id_pk"
         }
       },
@@ -413,11 +364,9 @@
         }
       },
       "indexes": {
-        "quizes_owner_id_idx": {
-          "name": "quizes_owner_id_idx",
-          "columns": [
-            "user_id"
-          ],
+        "quizes_user_id_idx": {
+          "name": "quizes_user_id_idx",
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -426,12 +375,8 @@
           "name": "quizes_user_id_users_id_fk",
           "tableFrom": "quizes",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -503,16 +448,12 @@
       "indexes": {
         "questions_quiz_id_idx": {
           "name": "questions_quiz_id_idx",
-          "columns": [
-            "quiz_id"
-          ],
+          "columns": ["quiz_id"],
           "isUnique": false
         },
         "questions_user_id_idx": {
           "name": "questions_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -521,12 +462,8 @@
           "name": "questions_quiz_id_quizes_id_fk",
           "tableFrom": "questions",
           "tableTo": "quizes",
-          "columnsFrom": [
-            "quiz_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["quiz_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -534,12 +471,8 @@
           "name": "questions_user_id_users_id_fk",
           "tableFrom": "questions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -605,23 +538,17 @@
       "indexes": {
         "notifications_quiz_id_idx": {
           "name": "notifications_quiz_id_idx",
-          "columns": [
-            "quiz_id"
-          ],
+          "columns": ["quiz_id"],
           "isUnique": false
         },
         "notifications_from_user_id_idx": {
           "name": "notifications_from_user_id_idx",
-          "columns": [
-            "from_user_id"
-          ],
+          "columns": ["from_user_id"],
           "isUnique": false
         },
         "notifications_user_id_idx": {
           "name": "notifications_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -630,12 +557,8 @@
           "name": "notifications_quiz_id_quizes_id_fk",
           "tableFrom": "notifications",
           "tableTo": "quizes",
-          "columnsFrom": [
-            "quiz_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["quiz_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -643,12 +566,8 @@
           "name": "notifications_from_user_id_users_id_fk",
           "tableFrom": "notifications",
           "tableTo": "users",
-          "columnsFrom": [
-            "from_user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["from_user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -656,12 +575,8 @@
           "name": "notifications_user_id_users_id_fk",
           "tableFrom": "notifications",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -682,3 +597,4 @@
     "indexes": {}
   }
 }
+

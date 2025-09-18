@@ -23,10 +23,17 @@ export type RouterAppContext = {
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: Root,
   beforeLoad: async ({ context: { trpcQueryUtils } }) => {
-    const { currentUser } = await trpcQueryUtils.auth.currentUser.ensureData();
+    // the access token is only valid for 7 days so current user can only be in cache for 7 days
+    const { currentUser } = await trpcQueryUtils.auth.currentUser.ensureData(
+      undefined,
+      {
+        staleTime: 7 * 24 * 60 * 60 * 1000,
+      },
+    );
     if (currentUser) {
       await trpcQueryUtils.quiz.byUserId.prefetch({ userId: currentUser.id });
     }
+    return { currentUser };
   },
 });
 
@@ -50,7 +57,9 @@ function Root() {
               </h3>
             </div>
           </header>
-          <Outlet />
+          <main className="flex-1 overflow-auto px-12">
+            <Outlet />
+          </main>
         </SidebarInset>
       </SidebarProvider>
       <Toaster />

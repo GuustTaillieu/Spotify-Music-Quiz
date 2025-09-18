@@ -9,7 +9,7 @@ import { Token } from "./features/auth/models";
 import { Spotify } from "./features/spotify";
 import { SpotifyToken } from "./features/spotify/models";
 import { User, usersTable } from "./features/user/models";
-import { ACCESS_TOKEN_KEY } from "./utils/constants";
+import { ACCESS_TOKEN_KEY, ACCESS_TOKEN_TTL } from "./utils/constants";
 
 type Context = Awaited<ReturnType<typeof createContext>>;
 
@@ -56,7 +56,7 @@ export async function createContext(
     opts.res.cookie(ACCESS_TOKEN_KEY, newAccessToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: ACCESS_TOKEN_TTL,
       partitioned: true,
     });
 

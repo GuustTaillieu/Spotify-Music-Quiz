@@ -2,7 +2,6 @@ import {
   BookOpen,
   LucideIcon,
   PersonStanding,
-  ScanEye,
   SquareTerminal,
 } from "lucide-react";
 
@@ -37,8 +36,8 @@ export const sidebarItems: SidebarGroups = {
         icon: BookOpen,
         items: [
           {
-            title: "Favorites",
-            url: "/quiz/favorites",
+            title: "Feed",
+            url: "/",
           },
         ],
       },
@@ -47,10 +46,17 @@ export const sidebarItems: SidebarGroups = {
   authenticated: {
     default: [
       {
-        title: "Explore quizzes",
-        url: "/",
+        title: "Overview",
         icon: BookOpen,
         items: [
+          {
+            title: "Feed",
+            url: "/",
+          },
+          {
+            title: "My quizzes",
+            url: "/quiz/mine",
+          },
           {
             title: "Favorites",
             url: "/quiz/favorites",
@@ -75,13 +81,17 @@ export const sidebarItems: SidebarGroups = {
     smith: [
       {
         title: "Build",
-        url: "/",
         icon: SquareTerminal,
-      },
-      {
-        title: "Overview",
-        url: "/",
-        icon: ScanEye,
+        items: [
+          {
+            title: "Overview",
+            url: "/",
+          },
+          {
+            title: "Edit",
+            url: "/",
+          },
+        ],
       },
       {
         title: "Documentation",

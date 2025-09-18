@@ -8,5 +8,9 @@ export const routeNames: CompleteRecord<FileRoutesByFullPath, string> = {
   "/notification/list": "Notifications",
   "/quiz/create": "Create quiz",
   "/quiz/search": "Search quiz",
+  "/quiz/mine": "My quizzes",
   "/quiz/favorites": "Favorites",
+  "/user/$userId": "User",
+  "/user/followers": "Followers",
+  "/user/following": "Following",
 };

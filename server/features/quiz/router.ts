@@ -26,19 +26,16 @@ import {
 } from "./helpers";
 
 export const quizRouter = router({
-  test: publicProcedure.mutation(({ ctx }) => {
-    return ctx.user;
-  }),
   byId: publicProcedure
     .input(z.object({ id: quizesSelectSchema.shape.id }))
     .output(
       quizesSelectSchema.extend({
+        user: userSelectSchema,
         attendees: z.array(userSelectSchema),
         attendeesCount: z.number(),
         favoritesCount: z.number(),
         isAttending: z.boolean(),
         isFavorited: z.boolean(),
-        owner: userSelectSchema,
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -47,11 +44,11 @@ export const quizRouter = router({
           eq(quizesTable.id, input.id),
           or(
             eq(quizesTable.public, true),
-            eq(quizesTable.ownerId, ctx.user?.id ?? -1),
+            eq(quizesTable.userId, ctx.user?.id ?? -1),
           ),
         ),
         with: {
-          owner: {},
+          user: {},
         },
       });
 
@@ -90,11 +87,11 @@ export const quizRouter = router({
       z.object({
         quizes: z.array(
           quizesSelectSchema.extend({
+            user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
             isAttending: z.boolean(),
             isFavorited: z.boolean(),
-            owner: userSelectSchema,
           }),
         ),
         nextCursor: z.number().optional(),
@@ -109,10 +106,10 @@ export const quizRouter = router({
         offset: cursor,
         where: or(
           eq(quizesTable.public, true),
-          eq(quizesTable.ownerId, ctx.user?.id ?? -1),
+          eq(quizesTable.userId, ctx.user?.id ?? -1),
         ),
         with: {
-          owner: {},
+          user: {},
         },
         orderBy: desc(quizesTable.createdAt),
       });
@@ -154,11 +151,11 @@ export const quizRouter = router({
       z.object({
         quizes: z.array(
           quizesSelectSchema.extend({
+            user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
             isAttending: z.boolean(),
             isFavorited: z.boolean(),
-            owner: userSelectSchema,
           }),
         ),
         nextCursor: z.number().optional(),
@@ -179,7 +176,7 @@ export const quizRouter = router({
         offset: cursor,
         where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
         with: {
-          owner: {},
+          user: {},
         },
         orderBy: desc(quizesTable.createdAt),
       });
@@ -220,11 +217,11 @@ export const quizRouter = router({
       z.object({
         quizes: z.array(
           quizesSelectSchema.extend({
+            user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
             isAttending: z.boolean(),
             isFavorited: z.boolean(),
-            owner: userSelectSchema,
           }),
         ),
         nextCursor: z.number().optional(),
@@ -237,10 +234,10 @@ export const quizRouter = router({
       const quizes = await db.query.quizesTable.findMany({
         limit,
         offset: cursor,
-        where: eq(quizesTable.ownerId, input.userId),
+        where: eq(quizesTable.userId, input.userId),
         orderBy: desc(quizesTable.createdAt),
         with: {
-          owner: {},
+          user: {},
         },
       });
 
@@ -280,7 +277,7 @@ export const quizRouter = router({
         .insert(quizesTable)
         .values({
           title: input.title,
-          ownerId: ctx.user.id,
+          userId: ctx.user.id,
           imageUrl: imagePath,
           public: input.public,
           createdAt: new Date().toISOString(),
@@ -312,7 +309,7 @@ export const quizRouter = router({
         });
       }
 
-      if (quiz.ownerId !== ctx.user.id) {
+      if (quiz.userId !== ctx.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You can only edit your own quizes",
@@ -351,7 +348,7 @@ export const quizRouter = router({
         });
       }
 
-      if (quiz.ownerId !== ctx.user.id) {
+      if (quiz.userId !== ctx.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You can only delete your own quizes",
@@ -401,7 +398,7 @@ export const quizRouter = router({
         type: "user_attending_quiz",
         quizId: input.id,
         fromUserId: ctx.user.id,
-        userId: quiz.ownerId,
+        userId: quiz.userId,
         createdAt: new Date().toISOString(),
       });
 
@@ -449,7 +446,7 @@ export const quizRouter = router({
         type: "user_unattending_quiz",
         quizId: input.id,
         fromUserId: ctx.user.id,
-        userId: quiz.ownerId,
+        userId: quiz.userId,
         createdAt: new Date().toISOString(),
       });
 
@@ -475,17 +472,17 @@ export const quizRouter = router({
         });
       }
 
-      if (quiz.ownerId !== ctx.user.id) {
+      if (quiz.userId !== ctx.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Only the quiz owner can kick attendees",
+          message: "Only the quiz user can kick attendees",
         });
       }
 
-      if (quiz.ownerId === input.userId) {
+      if (quiz.userId === input.userId) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Cannot kick the quiz owner",
+          message: "Cannot kick the quiz user",
         });
       }
 
@@ -559,8 +556,9 @@ export const quizRouter = router({
     )
     .output(
       z.object({
-        quizes: z.array(
+        quizzes: z.array(
           quizesSelectSchema.extend({
+            user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
             isAttending: z.boolean(),
@@ -579,33 +577,33 @@ export const quizRouter = router({
         limit,
         offset: cursor,
         with: {
-          quiz: {},
+          quiz: { with: { user: {} } },
         },
       });
 
-      const quizes = favorites.map((f) => f.quiz);
+      const quizzes = favorites.map((f) => f.quiz);
 
       const attendeesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizAttendeesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizAttendeesCount(quiz.id)),
       );
 
       const userContextResults = await Promise.all(
-        quizes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
+        quizzes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
       );
 
       const favoritesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizFavoritesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizFavoritesCount(quiz.id)),
       );
 
       return {
-        quizes: quizes.map((quiz, index) => ({
+        quizzes: quizzes.map((quiz, index) => ({
           ...quiz,
           attendeesCount: attendeesCountResults[index] ?? 0,
           isAttending: !!userContextResults[index].isAttending,
           isFavorited: !!userContextResults[index].isFavorited,
           favoritesCount: favoritesCountResults[index] ?? 0,
         })),
-        nextCursor: quizes.length === limit ? cursor + limit : undefined,
+        nextCursor: quizzes.length === limit ? cursor + limit : undefined,
       };
     }),
 

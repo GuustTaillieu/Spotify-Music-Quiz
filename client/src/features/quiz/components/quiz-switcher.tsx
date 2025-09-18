@@ -1,7 +1,8 @@
 import { Quiz, User } from "@music-quiz/server/database/schema";
 import { ChevronsUpDown, Eye, EyeOff, LoaderIcon, Plus } from "lucide-react";
-import { useState } from "react";
+import { ComponentProps, useState } from "react";
 
+import { Button } from "@/features/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,13 +18,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/features/shared/components/ui/sidebar";
+import { cn } from "@/lib/utils/cn";
 import { router, trpc } from "@/router";
 
 type QuizSwitcherProps = {
   user: User;
-};
+} & ComponentProps<typeof SidebarMenuButton>;
 
-export function QuizSwitcher({ user }: QuizSwitcherProps) {
+export function QuizSwitcher({ user, ...props }: QuizSwitcherProps) {
   const [{ pages }, quizesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
     { userId: user.id },
     {
@@ -34,21 +36,34 @@ export function QuizSwitcher({ user }: QuizSwitcherProps) {
 
   const loadMore = () => quizesQuery.fetchNextPage();
 
-  if (quizesQuery.isLoading) return <QuizSwitcherLoading />;
-  else if (quizes.length === 0 || !quizes) return <QuizSwitcherNoQuizes />;
-  else return <QuizSwitcherLoaded quizes={quizes} loadMore={loadMore} />;
+  if (quizesQuery.isLoading) {
+    return <QuizSwitcherLoading {...props} />;
+  } else if (quizes.length === 0 || !quizes) {
+    return <QuizSwitcherNoQuizes {...props} />;
+  } else {
+    return (
+      <QuizSwitcherLoaded quizes={quizes} loadMore={loadMore} {...props} />
+    );
+  }
 }
 
-type QuizSwitcherLoadingProps = {};
+type QuizSwitcherLoadingProps = Omit<QuizSwitcherProps, "user">;
 
-function QuizSwitcherLoading({}: QuizSwitcherLoadingProps) {
+function QuizSwitcherLoading({
+  className,
+  ...props
+}: QuizSwitcherLoadingProps) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton
           size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
+          className={cn(
+            "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer",
+            className,
+          )}
           onClick={() => router.navigate({ to: "/quiz/create" })}
+          {...props}
         >
           <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
             <LoaderIcon className="h-8 w-8 rounded-lg" />
@@ -65,16 +80,23 @@ function QuizSwitcherLoading({}: QuizSwitcherLoadingProps) {
   );
 }
 
-type QuizSwitcherNoQuizesProps = {};
+type QuizSwitcherNoQuizesProps = Omit<QuizSwitcherProps, "user">;
 
-function QuizSwitcherNoQuizes({}: QuizSwitcherNoQuizesProps) {
+function QuizSwitcherNoQuizes({
+  className,
+  ...props
+}: QuizSwitcherNoQuizesProps) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton
           size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
+          className={cn(
+            "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer",
+            className,
+          )}
           onClick={() => router.navigate({ to: "/quiz/create" })}
+          {...props}
         >
           <div className="bg-accent/20 text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
             <Plus className="text-accent-foreground size-6 rounded-lg" />
@@ -91,12 +113,17 @@ function QuizSwitcherNoQuizes({}: QuizSwitcherNoQuizesProps) {
   );
 }
 
-type QuizSwitcherLoadedProps = {
+type QuizSwitcherLoadedProps = Omit<QuizSwitcherProps, "user"> & {
   quizes: Quiz[];
   loadMore: () => void;
 };
 
-function QuizSwitcherLoaded({ quizes }: QuizSwitcherLoadedProps) {
+function QuizSwitcherLoaded({
+  quizes,
+  loadMore,
+  className,
+  ...props
+}: QuizSwitcherLoadedProps) {
   const { isMobile } = useSidebar();
   const [activeQuiz, setActiveQuiz] = useState(quizes?.[0]);
 
@@ -107,7 +134,11 @@ function QuizSwitcherLoaded({ quizes }: QuizSwitcherLoadedProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className={cn(
+                "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
+                className,
+              )}
+              {...props}
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 {activeQuiz.public ? <Eye /> : <EyeOff />}
@@ -142,12 +173,17 @@ function QuizSwitcherLoaded({ quizes }: QuizSwitcherLoadedProps) {
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
+            <Button variant="link" className="w-full" onClick={loadMore}>
+              Load more
+            </Button>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <Plus className="size-4" />
               </div>
-              <div className="text-muted-foreground font-medium">Add team</div>
+              <div className="text-muted-foreground font-medium">
+                Create quiz
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

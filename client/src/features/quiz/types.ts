@@ -1,7 +1,7 @@
-import { Quiz, User } from "@music-quiz/server/database/schema";
+import { LocalUser, Quiz } from "@music-quiz/server/database/schema";
 
 type QuizWithUser = Quiz & {
-  user: User;
+  user: LocalUser;
 };
 
 type QuizWithUserContext = Quiz & {
@@ -14,7 +14,7 @@ type QuizWithAttendeesCount = Quiz & {
 };
 
 type QuizWithAttendees = Quiz & {
-  attendees: User[];
+  attendees: LocalUser[];
 };
 
 type QuizWithFavoritesCount = Quiz & {

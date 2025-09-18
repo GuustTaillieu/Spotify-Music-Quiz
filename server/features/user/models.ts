@@ -8,6 +8,7 @@ export const usersTable = sqliteTable("users", {
   id: int().primaryKey({ autoIncrement: true }),
   spotifyId: text().notNull(),
   name: text().notNull(),
+  imageUrl: text().notNull(),
   createdAt: text().notNull(),
   updatedAt: text().notNull(),
 });
@@ -28,12 +29,15 @@ export const userFollowsTable = sqliteTable(
   (table) => [primaryKey({ columns: [table.followerId, table.followingId] })],
 );
 
-export const userSchema = userSelectSchema
+export const userWithSpotifySchema = userSelectSchema
   .omit({
     createdAt: true,
     updatedAt: true,
   })
-  .extend(spotifyUserSchema.omit({ id: true, display_name: true }).shape);
+  .extend(
+    spotifyUserSchema.omit({ id: true, display_name: true, images: true })
+      .shape,
+  );
 
-export type User = z.infer<typeof userSchema>;
+export type User = z.infer<typeof userWithSpotifySchema>;
 export type LocalUser = typeof usersTable.$inferSelect;

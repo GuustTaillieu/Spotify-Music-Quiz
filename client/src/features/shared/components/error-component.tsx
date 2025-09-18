@@ -19,7 +19,7 @@ export const ErrorComponent = ({}: ErrorComponentProps) => {
   };
 
   return (
-    <Card className="flex flex-col items-center justify-center gap-2">
+    <Card className="flex flex-col items-center justify-center gap-4 p-6">
       <AlertTriangle className="size-8" />
       <p>Something went wrong.</p>
       <Button variant="ghost" onClick={handleRetry}>

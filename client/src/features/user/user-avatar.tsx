@@ -1,4 +1,4 @@
-import { User } from "@music-quiz/server/database/schema";
+import { LocalUser } from "@music-quiz/server/database/schema";
 
 import {
   Avatar,
@@ -9,7 +9,7 @@ import { Link } from "@/features/shared/components/ui/link";
 import { cn } from "@/lib/utils/cn";
 
 type UserAvatarProps = {
-  user: User;
+  user: LocalUser;
   showName?: boolean;
   canGoToUserPage?: boolean;
   nameClassName?: string;
@@ -32,7 +32,7 @@ export const UserAvatar = ({
     >
       <Avatar className={className}>
         <AvatarImage
-          src={user.images[0].url ?? undefined}
+          src={user.imageUrl}
           alt={user.name}
           className="object-cover"
         />

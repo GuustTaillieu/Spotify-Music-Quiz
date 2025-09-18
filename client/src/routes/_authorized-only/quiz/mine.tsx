@@ -5,42 +5,43 @@ import { InfiniteScroll } from "@/features/shared/components/infinite-scroll";
 import { Spinner } from "@/features/shared/components/ui/spinner";
 import { trpc } from "@/router";
 
-export const Route = createFileRoute("/")({
-  component: HomePage,
-  loader: async ({ context: { trpcQueryUtils } }) => {
-    await trpcQueryUtils.quiz.feed.prefetchInfinite({});
+export const Route = createFileRoute("/_authorized-only/quiz/mine")({
+  loader: async ({ context: { trpcQueryUtils, currentUser } }) => {
+    await trpcQueryUtils.quiz.byUserId.prefetchInfinite({
+      userId: currentUser.id,
+    });
   },
+  component: RouteComponent,
 });
 
-function HomePage() {
-  const [{ pages }, quizzesQuery] = trpc.quiz.feed.useSuspenseInfiniteQuery(
-    {},
+function RouteComponent() {
+  const { currentUser } = Route.useRouteContext();
+  const [{ pages }, quizesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
+    { userId: currentUser.id },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 p-4">
-      <h1 className="text-3xl font-bold">Feed</h1>
-
-      {quizzesQuery.isLoading ? (
+    <main className="space-y-4">
+      {quizesQuery.isLoading ? (
         <div className="flex items-center justify-center">
           <Spinner />
         </div>
-      ) : quizzesQuery.isError ? (
+      ) : quizesQuery.isError ? (
         <div className="flex items-center justify-center">
           <p className="text-red-500">Error loading experiences</p>
         </div>
       ) : (
-        <InfiniteScroll onLoadMore={quizzesQuery.fetchNextPage}>
+        <InfiniteScroll onLoadMore={quizesQuery.fetchNextPage}>
           <QuizList
             quizes={pages.flatMap((page) => page.quizes) ?? []}
-            isLoading={quizzesQuery.isFetchingNextPage}
-            noQuizesMessage="No quizzes found"
+            isLoading={quizesQuery.isFetchingNextPage}
+            noQuizesMessage="No quizes found"
           />
         </InfiniteScroll>
       )}
-    </div>
+    </main>
   );
 }
