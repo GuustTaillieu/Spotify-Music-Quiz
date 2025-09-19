@@ -10,8 +10,8 @@ import { createSelectSchema } from "drizzle-zod";
 import { questionsTable } from "../question/models";
 import { usersTable } from "../user/models";
 
-export const quizesTable = sqliteTable(
-  "quizes",
+export const quizzesTable = sqliteTable(
+  "quizzes",
   {
     id: int().primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
@@ -26,19 +26,19 @@ export const quizesTable = sqliteTable(
     createdAt: text("created_at").notNull(),
     updatedAt: text("updated_at").notNull(),
   },
-  (table) => [index("quizes_user_id_idx").on(table.userId)],
+  (table) => [index("quizzes_user_id_idx").on(table.userId)],
 );
 
-export const quizesSelectSchema = createSelectSchema(quizesTable);
+export const quizzesSelectSchema = createSelectSchema(quizzesTable);
 
-export type Quiz = typeof quizesTable.$inferSelect;
+export type Quiz = typeof quizzesTable.$inferSelect;
 
 export const quizQuestionsTable = sqliteTable(
   "quiz_questions",
   {
     quizId: int("quiz_id")
       .notNull()
-      .references(() => quizesTable.id, { onDelete: "cascade" }),
+      .references(() => quizzesTable.id, { onDelete: "cascade" }),
     questionId: int("question_id")
       .notNull()
       .references(() => questionsTable.id, { onDelete: "cascade" }),
@@ -60,7 +60,7 @@ export const quizAttendeesTable = sqliteTable(
   {
     quizId: int("quiz_id")
       .notNull()
-      .references(() => quizesTable.id, { onDelete: "cascade" }),
+      .references(() => quizzesTable.id, { onDelete: "cascade" }),
     userId: int("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
@@ -82,7 +82,7 @@ export const quizFavoritesTable = sqliteTable(
   {
     quizId: int("quiz_id")
       .notNull()
-      .references(() => quizesTable.id, { onDelete: "cascade" }),
+      .references(() => quizzesTable.id, { onDelete: "cascade" }),
     userId: int("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),

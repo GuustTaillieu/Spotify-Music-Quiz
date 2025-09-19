@@ -1,18 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SearchIcon } from "lucide-react";
 
 import QuizList from "@/features/quiz/components/quiz-list";
 import { InfiniteScroll } from "@/features/shared/components/infinite-scroll";
+import { Button } from "@/features/shared/components/ui/button";
+import { Link } from "@/features/shared/components/ui/link";
 import { Spinner } from "@/features/shared/components/ui/spinner";
 import { trpc } from "@/router";
 
 export const Route = createFileRoute("/_authorized-only/quiz/favorites")({
-  component: FavoriteQuizesPage,
+  component: FavoriteQuizzesPage,
   loader: async ({ context: { trpcQueryUtils } }) => {
     await trpcQueryUtils.quiz.favorites.prefetchInfinite({});
   },
 });
 
-function FavoriteQuizesPage() {
+function FavoriteQuizzesPage() {
   const [{ pages }, favoritesQuery] =
     trpc.quiz.favorites.useSuspenseInfiniteQuery(
       {},
@@ -22,12 +25,22 @@ function FavoriteQuizesPage() {
     );
 
   return (
-    <main className="space-y-4">
+    <main className="space-y-4 py-8">
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">Favorites</h1>
+        <Button variant="ghost" asChild>
+          <Link to="/quiz/search" className="hover:no-underline">
+            <SearchIcon className="size-8" />
+            Search
+          </Link>
+        </Button>
+      </div>
+
       <InfiniteScroll onLoadMore={favoritesQuery.fetchNextPage}>
         <QuizList
-          quizes={pages.flatMap((page) => page.quizzes) ?? []}
+          quizzes={pages.flatMap((page) => page.quizzes) ?? []}
           isLoading={favoritesQuery.isFetchingNextPage}
-          noQuizesMessage="No favorites found"
+          noQuizzesMessage="No favorites found"
         />
       </InfiniteScroll>
       {favoritesQuery.isFetching ? (

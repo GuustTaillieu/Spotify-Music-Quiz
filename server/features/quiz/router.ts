@@ -10,9 +10,9 @@ import { db } from "../../database";
 import {
   notificationsTable,
   quizAttendeesTable,
-  quizesSelectSchema,
-  quizesTable,
   quizFavoritesTable,
+  quizzesSelectSchema,
+  quizzesTable,
   userSelectSchema,
 } from "../../database/schema";
 import { protectedProcedure, publicProcedure, router } from "../../trpc";
@@ -27,9 +27,9 @@ import {
 
 export const quizRouter = router({
   byId: publicProcedure
-    .input(z.object({ id: quizesSelectSchema.shape.id }))
+    .input(z.object({ id: quizzesSelectSchema.shape.id }))
     .output(
-      quizesSelectSchema.extend({
+      quizzesSelectSchema.extend({
         user: userSelectSchema,
         attendees: z.array(userSelectSchema),
         attendeesCount: z.number(),
@@ -39,12 +39,12 @@ export const quizRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const quiz = await db.query.quizesTable.findFirst({
+      const quiz = await db.query.quizzesTable.findFirst({
         where: and(
-          eq(quizesTable.id, input.id),
+          eq(quizzesTable.id, input.id),
           or(
-            eq(quizesTable.public, true),
-            eq(quizesTable.userId, ctx.user?.id ?? -1),
+            eq(quizzesTable.public, true),
+            eq(quizzesTable.userId, ctx.user?.id ?? -1),
           ),
         ),
         with: {
@@ -85,8 +85,8 @@ export const quizRouter = router({
     )
     .output(
       z.object({
-        quizes: z.array(
-          quizesSelectSchema.extend({
+        quizzes: z.array(
+          quizzesSelectSchema.extend({
             user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
@@ -101,40 +101,40 @@ export const quizRouter = router({
       const limit = input?.limit ?? DEFAULT_QUIZ_LIMIT;
       const cursor = input?.cursor ?? 0;
 
-      const quizes = await db.query.quizesTable.findMany({
+      const quizzes = await db.query.quizzesTable.findMany({
         limit,
         offset: cursor,
         where: or(
-          eq(quizesTable.public, true),
-          eq(quizesTable.userId, ctx.user?.id ?? -1),
+          eq(quizzesTable.public, true),
+          eq(quizzesTable.userId, ctx.user?.id ?? -1),
         ),
         with: {
           user: {},
         },
-        orderBy: desc(quizesTable.createdAt),
+        orderBy: desc(quizzesTable.createdAt),
       });
 
       const attendeesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizAttendeesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizAttendeesCount(quiz.id)),
       );
 
       const userContextResults = await Promise.all(
-        quizes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
+        quizzes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
       );
 
       const favoritesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizFavoritesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizFavoritesCount(quiz.id)),
       );
 
       return {
-        quizes: quizes.map((quiz, index) => ({
+        quizzes: quizzes.map((quiz, index) => ({
           ...quiz,
           attendeesCount: attendeesCountResults[index] ?? 0,
           isAttending: !!userContextResults[index].isAttending,
           isFavorited: !!userContextResults[index].isFavorited,
           favoritesCount: favoritesCountResults[index] ?? 0,
         })),
-        nextCursor: quizes.length === limit ? cursor + limit : undefined,
+        nextCursor: quizzes.length === limit ? cursor + limit : undefined,
       };
     }),
 
@@ -149,8 +149,8 @@ export const quizRouter = router({
     )
     .output(
       z.object({
-        quizes: z.array(
-          quizesSelectSchema.extend({
+        quizzes: z.array(
+          quizzesSelectSchema.extend({
             user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
@@ -168,40 +168,40 @@ export const quizRouter = router({
       const whereConditions = [];
 
       if (input.q) {
-        whereConditions.push(or(like(quizesTable.title, `%${input.q}%`)));
+        whereConditions.push(or(like(quizzesTable.title, `%${input.q}%`)));
       }
 
-      const quizes = await db.query.quizesTable.findMany({
+      const quizzes = await db.query.quizzesTable.findMany({
         limit,
         offset: cursor,
         where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
         with: {
           user: {},
         },
-        orderBy: desc(quizesTable.createdAt),
+        orderBy: desc(quizzesTable.createdAt),
       });
 
       const attendeesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizAttendeesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizAttendeesCount(quiz.id)),
       );
 
       const userContextResults = await Promise.all(
-        quizes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
+        quizzes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
       );
 
       const favoritesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizFavoritesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizFavoritesCount(quiz.id)),
       );
 
       return {
-        quizes: quizes.map((quiz, index) => ({
+        quizzes: quizzes.map((quiz, index) => ({
           ...quiz,
           attendeesCount: attendeesCountResults[index] ?? 0,
           isAttending: !!userContextResults[index].isAttending,
           isFavorited: !!userContextResults[index].isFavorited,
           favoritesCount: favoritesCountResults[index] ?? 0,
         })),
-        nextCursor: quizes.length === limit ? cursor + limit : undefined,
+        nextCursor: quizzes.length === limit ? cursor + limit : undefined,
       };
     }),
 
@@ -215,8 +215,8 @@ export const quizRouter = router({
     )
     .output(
       z.object({
-        quizes: z.array(
-          quizesSelectSchema.extend({
+        quizzes: z.array(
+          quizzesSelectSchema.extend({
             user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),
@@ -231,37 +231,37 @@ export const quizRouter = router({
       const limit = input.limit ?? DEFAULT_QUIZ_LIMIT;
       const cursor = input.cursor ?? 0;
 
-      const quizes = await db.query.quizesTable.findMany({
+      const quizzes = await db.query.quizzesTable.findMany({
         limit,
         offset: cursor,
-        where: eq(quizesTable.userId, input.userId),
-        orderBy: desc(quizesTable.createdAt),
+        where: eq(quizzesTable.userId, input.userId),
+        orderBy: desc(quizzesTable.createdAt),
         with: {
           user: {},
         },
       });
 
       const attendeesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizAttendeesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizAttendeesCount(quiz.id)),
       );
 
       const userContextResults = await Promise.all(
-        quizes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
+        quizzes.map((quiz) => getQuizUserContext(quiz.id, ctx.user?.id)),
       );
 
       const favoritesCountResults = await Promise.all(
-        quizes.map((quiz) => getQuizFavoritesCount(quiz.id)),
+        quizzes.map((quiz) => getQuizFavoritesCount(quiz.id)),
       );
 
       return {
-        quizes: quizes.map((quiz, index) => ({
+        quizzes: quizzes.map((quiz, index) => ({
           ...quiz,
           attendeesCount: attendeesCountResults[index] ?? 0,
           isAttending: !!userContextResults[index].isAttending,
           isFavorited: !!userContextResults[index].isFavorited,
           favoritesCount: favoritesCountResults[index] ?? 0,
         })),
-        nextCursor: quizes.length === limit ? cursor + limit : undefined,
+        nextCursor: quizzes.length === limit ? cursor + limit : undefined,
       };
     }),
 
@@ -274,7 +274,7 @@ export const quizRouter = router({
       }
 
       const [quiz] = await db
-        .insert(quizesTable)
+        .insert(quizzesTable)
         .values({
           title: input.title,
           userId: ctx.user.id,
@@ -298,8 +298,8 @@ export const quizRouter = router({
         });
       }
 
-      const quiz = await db.query.quizesTable.findFirst({
-        where: eq(quizesTable.id, input.id),
+      const quiz = await db.query.quizzesTable.findFirst({
+        where: eq(quizzesTable.id, input.id),
       });
 
       if (!quiz) {
@@ -312,7 +312,7 @@ export const quizRouter = router({
       if (quiz.userId !== ctx.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "You can only edit your own quizes",
+          message: "You can only edit your own quizzes",
         });
       }
 
@@ -320,25 +320,25 @@ export const quizRouter = router({
       if (input.image) {
         imagePath = await writeFile(input.image);
       }
-      const quizes = await db
-        .update(quizesTable)
+      const quizzes = await db
+        .update(quizzesTable)
         .set({
           title: input.title,
           imageUrl: imagePath,
           public: input.public,
           updatedAt: new Date().toISOString(),
         })
-        .where(eq(quizesTable.id, input.id))
+        .where(eq(quizzesTable.id, input.id))
         .returning();
 
-      return quizes[0];
+      return quizzes[0];
     }),
 
   delete: protectedProcedure
-    .input(z.object({ id: quizesSelectSchema.shape.id }))
+    .input(z.object({ id: quizzesSelectSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
-      const quiz = await db.query.quizesTable.findFirst({
-        where: eq(quizesTable.id, input.id),
+      const quiz = await db.query.quizzesTable.findFirst({
+        where: eq(quizzesTable.id, input.id),
       });
 
       if (!quiz) {
@@ -351,20 +351,20 @@ export const quizRouter = router({
       if (quiz.userId !== ctx.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "You can only delete your own quizes",
+          message: "You can only delete your own quizzes",
         });
       }
 
-      await db.delete(quizesTable).where(eq(quizesTable.id, input.id));
+      await db.delete(quizzesTable).where(eq(quizzesTable.id, input.id));
 
       return input.id;
     }),
 
   attend: protectedProcedure
-    .input(z.object({ id: quizesSelectSchema.shape.id }))
+    .input(z.object({ id: quizzesSelectSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
-      const quiz = await db.query.quizesTable.findFirst({
-        where: eq(quizesTable.id, input.id),
+      const quiz = await db.query.quizzesTable.findFirst({
+        where: eq(quizzesTable.id, input.id),
       });
 
       if (!quiz) {
@@ -406,10 +406,10 @@ export const quizRouter = router({
     }),
 
   unattend: protectedProcedure
-    .input(z.object({ id: quizesSelectSchema.shape.id }))
+    .input(z.object({ id: quizzesSelectSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
-      const quiz = await db.query.quizesTable.findFirst({
-        where: eq(quizesTable.id, input.id),
+      const quiz = await db.query.quizzesTable.findFirst({
+        where: eq(quizzesTable.id, input.id),
       });
 
       if (!quiz) {
@@ -456,13 +456,13 @@ export const quizRouter = router({
   kickAttendee: protectedProcedure
     .input(
       z.object({
-        quizId: quizesSelectSchema.shape.id,
+        quizId: quizzesSelectSchema.shape.id,
         userId: userSelectSchema.shape.id,
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const quiz = await db.query.quizesTable.findFirst({
-        where: eq(quizesTable.id, input.quizId),
+      const quiz = await db.query.quizzesTable.findFirst({
+        where: eq(quizzesTable.id, input.quizId),
       });
 
       if (!quiz) {
@@ -507,7 +507,7 @@ export const quizRouter = router({
     }),
 
   favorite: protectedProcedure
-    .input(z.object({ id: quizesSelectSchema.shape.id }))
+    .input(z.object({ id: quizzesSelectSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
       const existingFavorite = await db.query.quizFavoritesTable.findFirst({
         where: and(
@@ -533,7 +533,7 @@ export const quizRouter = router({
     }),
 
   unfavorite: protectedProcedure
-    .input(z.object({ id: quizesSelectSchema.shape.id }))
+    .input(z.object({ id: quizzesSelectSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
       await db
         .delete(quizFavoritesTable)
@@ -557,7 +557,7 @@ export const quizRouter = router({
     .output(
       z.object({
         quizzes: z.array(
-          quizesSelectSchema.extend({
+          quizzesSelectSchema.extend({
             user: userSelectSchema,
             attendeesCount: z.number(),
             favoritesCount: z.number(),

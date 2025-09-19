@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PlusIcon } from "lucide-react";
 
 import QuizList from "@/features/quiz/components/quiz-list";
 import { InfiniteScroll } from "@/features/shared/components/infinite-scroll";
+import { Button } from "@/features/shared/components/ui/button";
+import { Link } from "@/features/shared/components/ui/link";
 import { Spinner } from "@/features/shared/components/ui/spinner";
 import { trpc } from "@/router";
 
@@ -16,7 +19,7 @@ export const Route = createFileRoute("/_authorized-only/quiz/mine")({
 
 function RouteComponent() {
   const { currentUser } = Route.useRouteContext();
-  const [{ pages }, quizesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
+  const [{ pages }, quizzesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
     { userId: currentUser.id },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -24,21 +27,31 @@ function RouteComponent() {
   );
 
   return (
-    <main className="space-y-4">
-      {quizesQuery.isLoading ? (
+    <main className="space-y-4 py-8">
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">Mine</h1>
+        <Button variant="ghost" asChild>
+          <Link to="/quiz/create" className="hover:no-underline">
+            <PlusIcon className="size-8" />
+            Create quiz
+          </Link>
+        </Button>
+      </div>
+
+      {quizzesQuery.isLoading ? (
         <div className="flex items-center justify-center">
           <Spinner />
         </div>
-      ) : quizesQuery.isError ? (
+      ) : quizzesQuery.isError ? (
         <div className="flex items-center justify-center">
           <p className="text-red-500">Error loading experiences</p>
         </div>
       ) : (
-        <InfiniteScroll onLoadMore={quizesQuery.fetchNextPage}>
+        <InfiniteScroll onLoadMore={quizzesQuery.fetchNextPage}>
           <QuizList
-            quizes={pages.flatMap((page) => page.quizes) ?? []}
-            isLoading={quizesQuery.isFetchingNextPage}
-            noQuizesMessage="No quizes found"
+            quizzes={pages.flatMap((page) => page.quizzes) ?? []}
+            isLoading={quizzesQuery.isFetchingNextPage}
+            noQuizzesMessage="No quizzes found"
           />
         </InfiniteScroll>
       )}

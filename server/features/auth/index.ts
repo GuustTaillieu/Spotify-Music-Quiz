@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { env } from "../../utils/env";
+import { SpotifyToken } from "../spotify/models";
 
 const SALT_ROUNDS = 12;
 
@@ -29,7 +30,8 @@ export const auth = {
     }
   },
 
-  isTokenExpired: async ({ exp }: { exp: number }) => {
-    return exp - Date.now() / 1000 < 60;
+  isTokenExpired: async ({ issued_at, expires_in }: SpotifyToken) => {
+    // true if the token is about to expire in less than 60000 milliseconds (60 seconds)
+    return issued_at + expires_in * 1000 - Date.now() < 60000;
   },
 };

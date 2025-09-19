@@ -1,7 +1,7 @@
 import { and, count, eq } from "drizzle-orm";
 
 import { db } from "../../database";
-import { quizesTable, User, userFollowsTable } from "../../database/schema";
+import { quizzesTable, User, userFollowsTable } from "../../database/schema";
 
 export async function getUserFollowersCount(userId: User["id"]) {
   const [followersCount] = await db
@@ -21,13 +21,13 @@ export async function getUserFollowingCount(userId: User["id"]) {
   return followingCount?.count ?? 0;
 }
 
-export async function getUserOwnsQuizesCount(userId: User["id"]) {
-  const [ownedQuizesCount] = await db
+export async function getUserOwnsquizzesCount(userId: User["id"]) {
+  const [ownedquizzesCount] = await db
     .select({ count: count() })
-    .from(quizesTable)
-    .where(eq(quizesTable.userId, userId));
+    .from(quizzesTable)
+    .where(eq(quizzesTable.userId, userId));
 
-  return ownedQuizesCount?.count ?? 0;
+  return ownedquizzesCount?.count ?? 0;
 }
 
 export async function getUserFollowContext(

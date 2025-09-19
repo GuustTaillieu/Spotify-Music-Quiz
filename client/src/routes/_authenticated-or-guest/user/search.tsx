@@ -1,15 +1,18 @@
-import { quizFiltersSchema } from "@music-quiz/shared/schema/quiz";
+import { userFiltersSchema } from "@music-quiz/shared/schema/user";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { QuizFilters } from "@/features/quiz/components/quiz-filters";
-import QuizList from "@/features/quiz/components/quiz-list";
 import { InfiniteScroll } from "@/features/shared/components/infinite-scroll";
 import { Spinner } from "@/features/shared/components/ui/spinner";
+import { UserFilters } from "@/features/user/components/user-filters";
+import { UserList } from "@/features/user/components/user-list";
 import { trpc } from "@/router";
 
-export const Route = createFileRoute("/_authenticated-or-guest/quiz/search")({
+export const Route = createFileRoute("/_authenticated-or-guest/user/search")({
   component: SearchPage,
-  validateSearch: quizFiltersSchema,
+  validateSearch: userFiltersSchema,
+  loader: async ({ context: { trpcQueryUtils } }) => {
+    await trpcQueryUtils.users.search.prefetchInfinite({});
+  },
 });
 
 function SearchPage() {
@@ -18,37 +21,35 @@ function SearchPage() {
 
   const isSearching = !!search.q;
 
-  const quizQuery = trpc.quiz.search.useInfiniteQuery(search, {
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: isSearching,
-  });
+  const [{ pages }, userSearchQuery] =
+    trpc.users.search.useSuspenseInfiniteQuery(search, {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
 
   return (
     <main className="space-y-4 pt-2">
-      <QuizFilters
+      <UserFilters
         initialFilters={search}
         onFiltersChange={(filters) => navigate({ search: filters })}
       />
-      {quizQuery.isFetching ? (
+      {userSearchQuery.isFetching ? (
         <div className="flex items-center justify-center">
           <Spinner />
         </div>
-      ) : quizQuery.isError ? (
+      ) : userSearchQuery.isError ? (
         <div className="flex items-center justify-center">
           <p className="text-red-500">Error loading experiences</p>
         </div>
       ) : (
         <InfiniteScroll
-          onLoadMore={isSearching ? quizQuery.fetchNextPage : undefined}
+          onLoadMore={isSearching ? userSearchQuery.fetchNextPage : undefined}
         >
-          <QuizList
-            quizzes={
-              quizQuery.data?.pages.flatMap((page) => page.quizzes) ?? []
-            }
-            isLoading={quizQuery.isFetchingNextPage}
-            noQuizzesMessage={
+          <UserList
+            users={pages.flatMap((page) => page.users) ?? []}
+            isLoading={userSearchQuery.isFetchingNextPage}
+            noUsersMessage={
               isSearching
-                ? "No quizzes found matching your criteria"
+                ? "No users found matching your criteria"
                 : "Search to see results"
             }
           />

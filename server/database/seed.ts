@@ -4,7 +4,7 @@ import {
   notificationsTable,
   Quiz,
   quizAttendeesTable,
-  quizesTable,
+  quizzesTable,
   userFollowsTable,
   usersTable,
 } from "./schema";
@@ -12,7 +12,7 @@ import {
 import { db } from ".";
 
 async function seed() {
-  // Create other users and quizes
+  // Create other users and quizzes
   for (let i = 0; i < 100; i++) {
     // Creates fake users
     const generatedUsers = Array.from({ length: 5 }).map(() => ({
@@ -29,8 +29,8 @@ async function seed() {
 
     const postUser = users[0];
 
-    // Creates fake quizes
-    const generatedQuizes = Array.from({ length: 5 }).map(
+    // Creates fake quizzes
+    const generatedquizzes = Array.from({ length: 5 }).map(
       (_, i) =>
         ({
           title: faker.lorem.slug(),
@@ -41,13 +41,13 @@ async function seed() {
           updatedAt: new Date().toISOString(),
         }) as Quiz,
     );
-    const quizes = await db
-      .insert(quizesTable)
-      .values(generatedQuizes)
+    const quizzes = await db
+      .insert(quizzesTable)
+      .values(generatedquizzes)
       .returning();
 
-    // Add random attendees to quizes and create notifications
-    for (const quiz of quizes) {
+    // Add random attendees to quizzes and create notifications
+    for (const quiz of quizzes) {
       // Each experience will have between 0 and 20 random attendees
       const numberOfAttendees = Math.floor(Math.random() * 21);
       const shuffledUsers = [...users].sort(() => Math.random() - 0.5);

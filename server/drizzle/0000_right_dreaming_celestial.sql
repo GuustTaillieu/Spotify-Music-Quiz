@@ -21,7 +21,7 @@ CREATE TABLE `quiz_attendees` (
 	`user_id` integer NOT NULL,
 	`created_at` text NOT NULL,
 	PRIMARY KEY(`quiz_id`, `user_id`),
-	FOREIGN KEY (`quiz_id`) REFERENCES `quizes`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`quiz_id`) REFERENCES `quizzes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -32,7 +32,7 @@ CREATE TABLE `quiz_favorites` (
 	`user_id` integer NOT NULL,
 	`created_at` text NOT NULL,
 	PRIMARY KEY(`quiz_id`, `user_id`),
-	FOREIGN KEY (`quiz_id`) REFERENCES `quizes`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`quiz_id`) REFERENCES `quizzes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -43,13 +43,13 @@ CREATE TABLE `quiz_questions` (
 	`question_id` integer NOT NULL,
 	`created_at` text NOT NULL,
 	PRIMARY KEY(`quiz_id`, `question_id`),
-	FOREIGN KEY (`quiz_id`) REFERENCES `quizes`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`quiz_id`) REFERENCES `quizzes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE INDEX `quiz_questions_quiz_id_idx` ON `quiz_questions` (`quiz_id`);--> statement-breakpoint
 CREATE INDEX `quiz_questions_question_id_idx` ON `quiz_questions` (`question_id`);--> statement-breakpoint
-CREATE TABLE `quizes` (
+CREATE TABLE `quizzes` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`image_url` text,
@@ -60,7 +60,7 @@ CREATE TABLE `quizes` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `quizes_user_id_idx` ON `quizes` (`user_id`);--> statement-breakpoint
+CREATE INDEX `quizzes_user_id_idx` ON `quizzes` (`user_id`);--> statement-breakpoint
 CREATE TABLE `questions` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`quiz_id` integer NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE `questions` (
 	`user_id` integer NOT NULL,
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL,
-	FOREIGN KEY (`quiz_id`) REFERENCES `quizes`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`quiz_id`) REFERENCES `quizzes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -84,7 +84,7 @@ CREATE TABLE `notifications` (
 	`from_user_id` integer NOT NULL,
 	`user_id` integer,
 	`created_at` text NOT NULL,
-	FOREIGN KEY (`quiz_id`) REFERENCES `quizes`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`quiz_id`) REFERENCES `quizzes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`from_user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );

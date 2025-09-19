@@ -3,17 +3,17 @@ import { relations } from "drizzle-orm";
 import {
   notificationsTable,
   quizAttendeesTable,
-  quizesTable,
   quizFavoritesTable,
+  quizzesTable,
   userFollowsTable,
   usersTable,
 } from "./schema";
 
-export const quizesRelations = relations(quizesTable, ({ many, one }) => ({
+export const quizzesRelations = relations(quizzesTable, ({ many, one }) => ({
   attendees: many(quizAttendeesTable),
   notifications: many(notificationsTable),
   user: one(usersTable, {
-    fields: [quizesTable.userId],
+    fields: [quizzesTable.userId],
     references: [usersTable.id],
   }),
 }));
@@ -21,9 +21,9 @@ export const quizesRelations = relations(quizesTable, ({ many, one }) => ({
 export const quizAttendeesRelations = relations(
   quizAttendeesTable,
   ({ one }) => ({
-    quiz: one(quizesTable, {
+    quiz: one(quizzesTable, {
       fields: [quizAttendeesTable.quizId],
-      references: [quizesTable.id],
+      references: [quizzesTable.id],
     }),
     user: one(usersTable, {
       fields: [quizAttendeesTable.userId],
@@ -35,9 +35,9 @@ export const quizAttendeesRelations = relations(
 export const quizFavoritesRelations = relations(
   quizFavoritesTable,
   ({ one }) => ({
-    quiz: one(quizesTable, {
+    quiz: one(quizzesTable, {
       fields: [quizFavoritesTable.quizId],
-      references: [quizesTable.id],
+      references: [quizzesTable.id],
     }),
     user: one(usersTable, {
       fields: [quizFavoritesTable.userId],
@@ -49,9 +49,9 @@ export const quizFavoritesRelations = relations(
 export const notificationsRelations = relations(
   notificationsTable,
   ({ one }) => ({
-    experience: one(quizesTable, {
+    experience: one(quizzesTable, {
       fields: [notificationsTable.quizId],
-      references: [quizesTable.id],
+      references: [quizzesTable.id],
     }),
     fromUser: one(usersTable, {
       fields: [notificationsTable.fromUserId],

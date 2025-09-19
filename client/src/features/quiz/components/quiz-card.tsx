@@ -4,7 +4,7 @@ import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/button";
 import { Card } from "@/features/shared/components/ui/card";
 import { Link } from "@/features/shared/components/ui/link";
-import { UserAvatar } from "@/features/user/user-avatar";
+import { UserAvatar } from "@/features/user/components/user-avatar";
 
 import { QuizForList } from "../types";
 import { QuizAttendButton } from "./quiz-attend-button";
@@ -61,7 +61,7 @@ const QuizCardHeader = ({ quiz }: QuizCardHeaderProps) => {
   return (
     <div className="flex flex-col">
       <Link
-        to="/users/$userId"
+        to="/user/$userId"
         params={{ userId: quiz.user.id }}
         variant="ghost"
         className="text-sm"

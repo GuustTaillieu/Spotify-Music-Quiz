@@ -49,11 +49,7 @@ export const QuizForm = ({ quiz, onSuccess, onCancel }: QuizFormProps) => {
     const formData = new FormData();
     for (const [key, value] of Object.entries(data)) {
       if (!!value) {
-        if (["location", "tags"].includes(key)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, value as string | Blob);
-        }
+        formData.append(key, value as string | Blob);
       }
     }
 
@@ -98,10 +94,13 @@ export const QuizForm = ({ quiz, onSuccess, onCancel }: QuizFormProps) => {
           control={form.control}
           name="public"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Public</FormLabel>
+            <FormItem className="flex items-center gap-2">
+              <FormLabel>Public: </FormLabel>
               <FormControl>
-                <Switch {...field} value={String(field.value)} />
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -109,7 +108,10 @@ export const QuizForm = ({ quiz, onSuccess, onCancel }: QuizFormProps) => {
         />
 
         <div className="flex gap-2">
-          <Button type="submit" disabled={mutation.isPending}>
+          <Button
+            type="submit"
+            disabled={mutation.isPending || !form.formState.isValid}
+          >
             {mutation.isPending ? "Saving..." : "Save"}
           </Button>
           <Button

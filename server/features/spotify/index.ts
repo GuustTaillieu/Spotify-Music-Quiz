@@ -48,7 +48,10 @@ export abstract class Spotify {
         });
       }
 
-      return (await response.json()) as SpotifyToken;
+      return {
+        ...(await response.json()),
+        issued_at: Date.now(),
+      } as SpotifyToken;
     } catch (error) {
       console.error("Error fetching Spotify token:", error);
       // Re-throw as TRPCError if it's not already one
@@ -95,7 +98,7 @@ class SpotifyWithAuth {
     if (!response.ok) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "Invalid code",
+        message: "Invalid spotify token",
       });
     }
 
@@ -140,6 +143,7 @@ class SpotifyWithAuth {
       return {
         ...refreshedToken,
         refresh_token: refreshToken,
+        issued_at: Date.now(),
       } as SpotifyToken;
     }
     return refreshedToken;

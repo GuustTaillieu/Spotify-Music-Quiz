@@ -39,6 +39,10 @@ export const sidebarItems: SidebarGroups = {
             title: "Feed",
             url: "/",
           },
+          {
+            title: "Search",
+            url: "/quiz/search",
+          },
         ],
       },
     ],
@@ -54,6 +58,10 @@ export const sidebarItems: SidebarGroups = {
             url: "/",
           },
           {
+            title: "Search",
+            url: "/quiz/search",
+          },
+          {
             title: "My quizzes",
             url: "/quiz/mine",
           },
@@ -64,16 +72,20 @@ export const sidebarItems: SidebarGroups = {
         ],
       },
       {
-        title: "Friends",
+        title: "Users",
         icon: PersonStanding,
         items: [
           {
+            title: "Search",
+            url: "/user/search",
+          },
+          {
             title: "Following",
-            url: "/user/following",
+            url: "/user/$userId/following",
           },
           {
             title: "Followers",
-            url: "/user/followers",
+            url: "/user/$userId/followers",
           },
         ],
       },
@@ -92,16 +104,6 @@ export const sidebarItems: SidebarGroups = {
             url: "/",
           },
         ],
-      },
-      {
-        title: "Documentation",
-        url: "/",
-        icon: BookOpen,
-      },
-      {
-        title: "Settings",
-        url: "/",
-        icon: SquareTerminal,
       },
     ],
   },

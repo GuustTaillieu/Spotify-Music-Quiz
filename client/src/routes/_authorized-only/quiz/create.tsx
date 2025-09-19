@@ -12,7 +12,7 @@ function RouteComponent() {
   return (
     <main className="space-y-4">
       <h1 className="text-2xl font-bold">New quiz</h1>
-      <Card>
+      <Card className="p-6">
         <QuizForm
           onSuccess={(id) =>
             router.navigate({

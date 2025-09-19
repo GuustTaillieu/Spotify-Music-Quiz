@@ -1,8 +1,8 @@
 import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 
+import { quizzesTable } from "../quiz/models";
 import { usersTable } from "../user/models";
-import { quizesTable } from "../quiz/models";
 
 export const questionsTable = sqliteTable(
   "questions",
@@ -10,7 +10,7 @@ export const questionsTable = sqliteTable(
     id: int().primaryKey({ autoIncrement: true }),
     quizId: int("quiz_id")
       .notNull()
-      .references(() => quizesTable.id, { onDelete: "cascade" }),
+      .references(() => quizzesTable.id, { onDelete: "cascade" }),
     questionType: text("question_type").notNull(),
     spotifyTrackId: text("spotify_id").notNull(),
     timestampToStop: text("timestamp"),

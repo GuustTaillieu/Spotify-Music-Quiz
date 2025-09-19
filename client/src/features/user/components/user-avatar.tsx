@@ -25,7 +25,7 @@ export const UserAvatar = ({
 }: UserAvatarProps) => {
   return (
     <Link
-      to="/users/$userId"
+      to="/user/$userId"
       params={{ userId: user.id }}
       className={cn("flex items-center gap-2", className)}
       disabled={!canGoToUserPage}

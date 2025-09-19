@@ -1,6 +1,7 @@
 import { useRouterState } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import {
   Collapsible,
   CollapsibleContent,
@@ -15,6 +16,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/features/shared/components/ui/sidebar";
 import { SidebarItem, SidebarItemChild } from "@/lib/conststants/sidebar-items";
 
@@ -25,7 +27,9 @@ type SidebarItemsProps = {
 };
 
 export function SidebarItems({ items }: SidebarItemsProps) {
+  const { currentUser } = useCurrentUser();
   const { location } = useRouterState();
+  const { setOpen } = useSidebar();
 
   const isItemActive = (item: SidebarItemChild): boolean => {
     return location.pathname == item.url;
@@ -33,6 +37,10 @@ export function SidebarItems({ items }: SidebarItemsProps) {
 
   const isChildItemActive = (item: SidebarItem): boolean => {
     return item.items.some((subItem) => isItemActive(subItem));
+  };
+
+  const openSidebar = () => {
+    setOpen(true);
   };
 
   return (
@@ -48,7 +56,7 @@ export function SidebarItems({ items }: SidebarItemsProps) {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton tooltip={item.title} onClick={openSidebar}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -64,7 +72,11 @@ export function SidebarItems({ items }: SidebarItemsProps) {
                       }
                     >
                       <SidebarMenuSubButton asChild>
-                        <Link className="hover:no-underline" href={subItem.url}>
+                        <Link
+                          className="hover:no-underline"
+                          to={subItem.url}
+                          params={{ userId: currentUser?.id }}
+                        >
                           {subItem.title}
                         </Link>
                       </SidebarMenuSubButton>

@@ -15,15 +15,15 @@ import {
 } from "@/features/shared/components/ui/form";
 import { Input } from "@/features/shared/components/ui/input";
 
-type QuizFiltersProps = {
+type UserFiltersProps = {
   onFiltersChange: (filters: QuizFilterParams) => void;
   initialFilters: QuizFilterParams;
 };
 
-export const QuizFilters = ({
+export const UserFilters = ({
   onFiltersChange,
   initialFilters,
-}: QuizFiltersProps) => {
+}: UserFiltersProps) => {
   const form = useForm<QuizFilterParams>({
     defaultValues: initialFilters,
     resolver: zodResolver(quizFiltersSchema),

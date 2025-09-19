@@ -14,14 +14,18 @@ import { Route as AuthorizedOnlyRouteRouteImport } from './routes/_authorized-on
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuestOnlyAuthLoginRouteImport } from './routes/_guest-only/auth/login'
 import { Route as GuestOnlyAuthCallbackRouteImport } from './routes/_guest-only/auth/callback'
-import { Route as AuthorizedOnlyUserFollowingRouteImport } from './routes/_authorized-only/user/following'
-import { Route as AuthorizedOnlyUserFollowersRouteImport } from './routes/_authorized-only/user/followers'
 import { Route as AuthorizedOnlyQuizMineRouteImport } from './routes/_authorized-only/quiz/mine'
 import { Route as AuthorizedOnlyQuizFavoritesRouteImport } from './routes/_authorized-only/quiz/favorites'
 import { Route as AuthorizedOnlyQuizCreateRouteImport } from './routes/_authorized-only/quiz/create'
 import { Route as AuthorizedOnlyNotificationListRouteImport } from './routes/_authorized-only/notification/list'
+import { Route as AuthenticatedOrGuestUserSearchRouteImport } from './routes/_authenticated-or-guest/user/search'
 import { Route as AuthenticatedOrGuestQuizSearchRouteImport } from './routes/_authenticated-or-guest/quiz/search'
-import { Route as AuthorizedOnlyUserUserIdIndexRouteImport } from './routes/_authorized-only/user/$userId/index'
+import { Route as AuthenticatedOrGuestUserUserIdIndexRouteImport } from './routes/_authenticated-or-guest/user/$userId/index'
+import { Route as AuthenticatedOrGuestQuizQuizIdIndexRouteImport } from './routes/_authenticated-or-guest/quiz/$quizId/index'
+import { Route as AuthenticatedOrGuestUserUserIdFollowingRouteImport } from './routes/_authenticated-or-guest/user/$userId/following'
+import { Route as AuthenticatedOrGuestUserUserIdFollowersRouteImport } from './routes/_authenticated-or-guest/user/$userId/followers'
+import { Route as AuthenticatedOrGuestQuizQuizIdEditRouteImport } from './routes/_authenticated-or-guest/quiz/$quizId/edit'
+import { Route as AuthenticatedOrGuestQuizQuizIdAttendeesRouteImport } from './routes/_authenticated-or-guest/quiz/$quizId/attendees'
 
 const GuestOnlyRouteRoute = GuestOnlyRouteRouteImport.update({
   id: '/_guest-only',
@@ -46,18 +50,6 @@ const GuestOnlyAuthCallbackRoute = GuestOnlyAuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => GuestOnlyRouteRoute,
 } as any)
-const AuthorizedOnlyUserFollowingRoute =
-  AuthorizedOnlyUserFollowingRouteImport.update({
-    id: '/user/following',
-    path: '/user/following',
-    getParentRoute: () => AuthorizedOnlyRouteRoute,
-  } as any)
-const AuthorizedOnlyUserFollowersRoute =
-  AuthorizedOnlyUserFollowersRouteImport.update({
-    id: '/user/followers',
-    path: '/user/followers',
-    getParentRoute: () => AuthorizedOnlyRouteRoute,
-  } as any)
 const AuthorizedOnlyQuizMineRoute = AuthorizedOnlyQuizMineRouteImport.update({
   id: '/quiz/mine',
   path: '/quiz/mine',
@@ -81,44 +73,88 @@ const AuthorizedOnlyNotificationListRoute =
     path: '/notification/list',
     getParentRoute: () => AuthorizedOnlyRouteRoute,
   } as any)
+const AuthenticatedOrGuestUserSearchRoute =
+  AuthenticatedOrGuestUserSearchRouteImport.update({
+    id: '/_authenticated-or-guest/user/search',
+    path: '/user/search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedOrGuestQuizSearchRoute =
   AuthenticatedOrGuestQuizSearchRouteImport.update({
     id: '/_authenticated-or-guest/quiz/search',
     path: '/quiz/search',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthorizedOnlyUserUserIdIndexRoute =
-  AuthorizedOnlyUserUserIdIndexRouteImport.update({
-    id: '/user/$userId/',
+const AuthenticatedOrGuestUserUserIdIndexRoute =
+  AuthenticatedOrGuestUserUserIdIndexRouteImport.update({
+    id: '/_authenticated-or-guest/user/$userId/',
     path: '/user/$userId/',
-    getParentRoute: () => AuthorizedOnlyRouteRoute,
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOrGuestQuizQuizIdIndexRoute =
+  AuthenticatedOrGuestQuizQuizIdIndexRouteImport.update({
+    id: '/_authenticated-or-guest/quiz/$quizId/',
+    path: '/quiz/$quizId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOrGuestUserUserIdFollowingRoute =
+  AuthenticatedOrGuestUserUserIdFollowingRouteImport.update({
+    id: '/_authenticated-or-guest/user/$userId/following',
+    path: '/user/$userId/following',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOrGuestUserUserIdFollowersRoute =
+  AuthenticatedOrGuestUserUserIdFollowersRouteImport.update({
+    id: '/_authenticated-or-guest/user/$userId/followers',
+    path: '/user/$userId/followers',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOrGuestQuizQuizIdEditRoute =
+  AuthenticatedOrGuestQuizQuizIdEditRouteImport.update({
+    id: '/_authenticated-or-guest/quiz/$quizId/edit',
+    path: '/quiz/$quizId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOrGuestQuizQuizIdAttendeesRoute =
+  AuthenticatedOrGuestQuizQuizIdAttendeesRouteImport.update({
+    id: '/_authenticated-or-guest/quiz/$quizId/attendees',
+    path: '/quiz/$quizId/attendees',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/quiz/search': typeof AuthenticatedOrGuestQuizSearchRoute
+  '/user/search': typeof AuthenticatedOrGuestUserSearchRoute
   '/notification/list': typeof AuthorizedOnlyNotificationListRoute
   '/quiz/create': typeof AuthorizedOnlyQuizCreateRoute
   '/quiz/favorites': typeof AuthorizedOnlyQuizFavoritesRoute
   '/quiz/mine': typeof AuthorizedOnlyQuizMineRoute
-  '/user/followers': typeof AuthorizedOnlyUserFollowersRoute
-  '/user/following': typeof AuthorizedOnlyUserFollowingRoute
   '/auth/callback': typeof GuestOnlyAuthCallbackRoute
   '/auth/login': typeof GuestOnlyAuthLoginRoute
-  '/user/$userId': typeof AuthorizedOnlyUserUserIdIndexRoute
+  '/quiz/$quizId/attendees': typeof AuthenticatedOrGuestQuizQuizIdAttendeesRoute
+  '/quiz/$quizId/edit': typeof AuthenticatedOrGuestQuizQuizIdEditRoute
+  '/user/$userId/followers': typeof AuthenticatedOrGuestUserUserIdFollowersRoute
+  '/user/$userId/following': typeof AuthenticatedOrGuestUserUserIdFollowingRoute
+  '/quiz/$quizId': typeof AuthenticatedOrGuestQuizQuizIdIndexRoute
+  '/user/$userId': typeof AuthenticatedOrGuestUserUserIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/quiz/search': typeof AuthenticatedOrGuestQuizSearchRoute
+  '/user/search': typeof AuthenticatedOrGuestUserSearchRoute
   '/notification/list': typeof AuthorizedOnlyNotificationListRoute
   '/quiz/create': typeof AuthorizedOnlyQuizCreateRoute
   '/quiz/favorites': typeof AuthorizedOnlyQuizFavoritesRoute
   '/quiz/mine': typeof AuthorizedOnlyQuizMineRoute
-  '/user/followers': typeof AuthorizedOnlyUserFollowersRoute
-  '/user/following': typeof AuthorizedOnlyUserFollowingRoute
   '/auth/callback': typeof GuestOnlyAuthCallbackRoute
   '/auth/login': typeof GuestOnlyAuthLoginRoute
-  '/user/$userId': typeof AuthorizedOnlyUserUserIdIndexRoute
+  '/quiz/$quizId/attendees': typeof AuthenticatedOrGuestQuizQuizIdAttendeesRoute
+  '/quiz/$quizId/edit': typeof AuthenticatedOrGuestQuizQuizIdEditRoute
+  '/user/$userId/followers': typeof AuthenticatedOrGuestUserUserIdFollowersRoute
+  '/user/$userId/following': typeof AuthenticatedOrGuestUserUserIdFollowingRoute
+  '/quiz/$quizId': typeof AuthenticatedOrGuestQuizQuizIdIndexRoute
+  '/user/$userId': typeof AuthenticatedOrGuestUserUserIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -126,42 +162,54 @@ export interface FileRoutesById {
   '/_authorized-only': typeof AuthorizedOnlyRouteRouteWithChildren
   '/_guest-only': typeof GuestOnlyRouteRouteWithChildren
   '/_authenticated-or-guest/quiz/search': typeof AuthenticatedOrGuestQuizSearchRoute
+  '/_authenticated-or-guest/user/search': typeof AuthenticatedOrGuestUserSearchRoute
   '/_authorized-only/notification/list': typeof AuthorizedOnlyNotificationListRoute
   '/_authorized-only/quiz/create': typeof AuthorizedOnlyQuizCreateRoute
   '/_authorized-only/quiz/favorites': typeof AuthorizedOnlyQuizFavoritesRoute
   '/_authorized-only/quiz/mine': typeof AuthorizedOnlyQuizMineRoute
-  '/_authorized-only/user/followers': typeof AuthorizedOnlyUserFollowersRoute
-  '/_authorized-only/user/following': typeof AuthorizedOnlyUserFollowingRoute
   '/_guest-only/auth/callback': typeof GuestOnlyAuthCallbackRoute
   '/_guest-only/auth/login': typeof GuestOnlyAuthLoginRoute
-  '/_authorized-only/user/$userId/': typeof AuthorizedOnlyUserUserIdIndexRoute
+  '/_authenticated-or-guest/quiz/$quizId/attendees': typeof AuthenticatedOrGuestQuizQuizIdAttendeesRoute
+  '/_authenticated-or-guest/quiz/$quizId/edit': typeof AuthenticatedOrGuestQuizQuizIdEditRoute
+  '/_authenticated-or-guest/user/$userId/followers': typeof AuthenticatedOrGuestUserUserIdFollowersRoute
+  '/_authenticated-or-guest/user/$userId/following': typeof AuthenticatedOrGuestUserUserIdFollowingRoute
+  '/_authenticated-or-guest/quiz/$quizId/': typeof AuthenticatedOrGuestQuizQuizIdIndexRoute
+  '/_authenticated-or-guest/user/$userId/': typeof AuthenticatedOrGuestUserUserIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/quiz/search'
+    | '/user/search'
     | '/notification/list'
     | '/quiz/create'
     | '/quiz/favorites'
     | '/quiz/mine'
-    | '/user/followers'
-    | '/user/following'
     | '/auth/callback'
     | '/auth/login'
+    | '/quiz/$quizId/attendees'
+    | '/quiz/$quizId/edit'
+    | '/user/$userId/followers'
+    | '/user/$userId/following'
+    | '/quiz/$quizId'
     | '/user/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/quiz/search'
+    | '/user/search'
     | '/notification/list'
     | '/quiz/create'
     | '/quiz/favorites'
     | '/quiz/mine'
-    | '/user/followers'
-    | '/user/following'
     | '/auth/callback'
     | '/auth/login'
+    | '/quiz/$quizId/attendees'
+    | '/quiz/$quizId/edit'
+    | '/user/$userId/followers'
+    | '/user/$userId/following'
+    | '/quiz/$quizId'
     | '/user/$userId'
   id:
     | '__root__'
@@ -169,15 +217,19 @@ export interface FileRouteTypes {
     | '/_authorized-only'
     | '/_guest-only'
     | '/_authenticated-or-guest/quiz/search'
+    | '/_authenticated-or-guest/user/search'
     | '/_authorized-only/notification/list'
     | '/_authorized-only/quiz/create'
     | '/_authorized-only/quiz/favorites'
     | '/_authorized-only/quiz/mine'
-    | '/_authorized-only/user/followers'
-    | '/_authorized-only/user/following'
     | '/_guest-only/auth/callback'
     | '/_guest-only/auth/login'
-    | '/_authorized-only/user/$userId/'
+    | '/_authenticated-or-guest/quiz/$quizId/attendees'
+    | '/_authenticated-or-guest/quiz/$quizId/edit'
+    | '/_authenticated-or-guest/user/$userId/followers'
+    | '/_authenticated-or-guest/user/$userId/following'
+    | '/_authenticated-or-guest/quiz/$quizId/'
+    | '/_authenticated-or-guest/user/$userId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -185,6 +237,13 @@ export interface RootRouteChildren {
   AuthorizedOnlyRouteRoute: typeof AuthorizedOnlyRouteRouteWithChildren
   GuestOnlyRouteRoute: typeof GuestOnlyRouteRouteWithChildren
   AuthenticatedOrGuestQuizSearchRoute: typeof AuthenticatedOrGuestQuizSearchRoute
+  AuthenticatedOrGuestUserSearchRoute: typeof AuthenticatedOrGuestUserSearchRoute
+  AuthenticatedOrGuestQuizQuizIdAttendeesRoute: typeof AuthenticatedOrGuestQuizQuizIdAttendeesRoute
+  AuthenticatedOrGuestQuizQuizIdEditRoute: typeof AuthenticatedOrGuestQuizQuizIdEditRoute
+  AuthenticatedOrGuestUserUserIdFollowersRoute: typeof AuthenticatedOrGuestUserUserIdFollowersRoute
+  AuthenticatedOrGuestUserUserIdFollowingRoute: typeof AuthenticatedOrGuestUserUserIdFollowingRoute
+  AuthenticatedOrGuestQuizQuizIdIndexRoute: typeof AuthenticatedOrGuestQuizQuizIdIndexRoute
+  AuthenticatedOrGuestUserUserIdIndexRoute: typeof AuthenticatedOrGuestUserUserIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -224,20 +283,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuestOnlyAuthCallbackRouteImport
       parentRoute: typeof GuestOnlyRouteRoute
     }
-    '/_authorized-only/user/following': {
-      id: '/_authorized-only/user/following'
-      path: '/user/following'
-      fullPath: '/user/following'
-      preLoaderRoute: typeof AuthorizedOnlyUserFollowingRouteImport
-      parentRoute: typeof AuthorizedOnlyRouteRoute
-    }
-    '/_authorized-only/user/followers': {
-      id: '/_authorized-only/user/followers'
-      path: '/user/followers'
-      fullPath: '/user/followers'
-      preLoaderRoute: typeof AuthorizedOnlyUserFollowersRouteImport
-      parentRoute: typeof AuthorizedOnlyRouteRoute
-    }
     '/_authorized-only/quiz/mine': {
       id: '/_authorized-only/quiz/mine'
       path: '/quiz/mine'
@@ -266,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthorizedOnlyNotificationListRouteImport
       parentRoute: typeof AuthorizedOnlyRouteRoute
     }
+    '/_authenticated-or-guest/user/search': {
+      id: '/_authenticated-or-guest/user/search'
+      path: '/user/search'
+      fullPath: '/user/search'
+      preLoaderRoute: typeof AuthenticatedOrGuestUserSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated-or-guest/quiz/search': {
       id: '/_authenticated-or-guest/quiz/search'
       path: '/quiz/search'
@@ -273,12 +325,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrGuestQuizSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authorized-only/user/$userId/': {
-      id: '/_authorized-only/user/$userId/'
+    '/_authenticated-or-guest/user/$userId/': {
+      id: '/_authenticated-or-guest/user/$userId/'
       path: '/user/$userId'
       fullPath: '/user/$userId'
-      preLoaderRoute: typeof AuthorizedOnlyUserUserIdIndexRouteImport
-      parentRoute: typeof AuthorizedOnlyRouteRoute
+      preLoaderRoute: typeof AuthenticatedOrGuestUserUserIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated-or-guest/quiz/$quizId/': {
+      id: '/_authenticated-or-guest/quiz/$quizId/'
+      path: '/quiz/$quizId'
+      fullPath: '/quiz/$quizId'
+      preLoaderRoute: typeof AuthenticatedOrGuestQuizQuizIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated-or-guest/user/$userId/following': {
+      id: '/_authenticated-or-guest/user/$userId/following'
+      path: '/user/$userId/following'
+      fullPath: '/user/$userId/following'
+      preLoaderRoute: typeof AuthenticatedOrGuestUserUserIdFollowingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated-or-guest/user/$userId/followers': {
+      id: '/_authenticated-or-guest/user/$userId/followers'
+      path: '/user/$userId/followers'
+      fullPath: '/user/$userId/followers'
+      preLoaderRoute: typeof AuthenticatedOrGuestUserUserIdFollowersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated-or-guest/quiz/$quizId/edit': {
+      id: '/_authenticated-or-guest/quiz/$quizId/edit'
+      path: '/quiz/$quizId/edit'
+      fullPath: '/quiz/$quizId/edit'
+      preLoaderRoute: typeof AuthenticatedOrGuestQuizQuizIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated-or-guest/quiz/$quizId/attendees': {
+      id: '/_authenticated-or-guest/quiz/$quizId/attendees'
+      path: '/quiz/$quizId/attendees'
+      fullPath: '/quiz/$quizId/attendees'
+      preLoaderRoute: typeof AuthenticatedOrGuestQuizQuizIdAttendeesRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -288,9 +375,6 @@ interface AuthorizedOnlyRouteRouteChildren {
   AuthorizedOnlyQuizCreateRoute: typeof AuthorizedOnlyQuizCreateRoute
   AuthorizedOnlyQuizFavoritesRoute: typeof AuthorizedOnlyQuizFavoritesRoute
   AuthorizedOnlyQuizMineRoute: typeof AuthorizedOnlyQuizMineRoute
-  AuthorizedOnlyUserFollowersRoute: typeof AuthorizedOnlyUserFollowersRoute
-  AuthorizedOnlyUserFollowingRoute: typeof AuthorizedOnlyUserFollowingRoute
-  AuthorizedOnlyUserUserIdIndexRoute: typeof AuthorizedOnlyUserUserIdIndexRoute
 }
 
 const AuthorizedOnlyRouteRouteChildren: AuthorizedOnlyRouteRouteChildren = {
@@ -298,9 +382,6 @@ const AuthorizedOnlyRouteRouteChildren: AuthorizedOnlyRouteRouteChildren = {
   AuthorizedOnlyQuizCreateRoute: AuthorizedOnlyQuizCreateRoute,
   AuthorizedOnlyQuizFavoritesRoute: AuthorizedOnlyQuizFavoritesRoute,
   AuthorizedOnlyQuizMineRoute: AuthorizedOnlyQuizMineRoute,
-  AuthorizedOnlyUserFollowersRoute: AuthorizedOnlyUserFollowersRoute,
-  AuthorizedOnlyUserFollowingRoute: AuthorizedOnlyUserFollowingRoute,
-  AuthorizedOnlyUserUserIdIndexRoute: AuthorizedOnlyUserUserIdIndexRoute,
 }
 
 const AuthorizedOnlyRouteRouteWithChildren =
@@ -325,6 +406,19 @@ const rootRouteChildren: RootRouteChildren = {
   AuthorizedOnlyRouteRoute: AuthorizedOnlyRouteRouteWithChildren,
   GuestOnlyRouteRoute: GuestOnlyRouteRouteWithChildren,
   AuthenticatedOrGuestQuizSearchRoute: AuthenticatedOrGuestQuizSearchRoute,
+  AuthenticatedOrGuestUserSearchRoute: AuthenticatedOrGuestUserSearchRoute,
+  AuthenticatedOrGuestQuizQuizIdAttendeesRoute:
+    AuthenticatedOrGuestQuizQuizIdAttendeesRoute,
+  AuthenticatedOrGuestQuizQuizIdEditRoute:
+    AuthenticatedOrGuestQuizQuizIdEditRoute,
+  AuthenticatedOrGuestUserUserIdFollowersRoute:
+    AuthenticatedOrGuestUserUserIdFollowersRoute,
+  AuthenticatedOrGuestUserUserIdFollowingRoute:
+    AuthenticatedOrGuestUserUserIdFollowingRoute,
+  AuthenticatedOrGuestQuizQuizIdIndexRoute:
+    AuthenticatedOrGuestQuizQuizIdIndexRoute,
+  AuthenticatedOrGuestUserUserIdIndexRoute:
+    AuthenticatedOrGuestUserUserIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

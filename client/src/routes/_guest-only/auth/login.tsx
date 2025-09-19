@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { Button } from "@/features/shared/components/ui/button";
 import { trpc } from "@/router";
 
 export const Route = createFileRoute("/_guest-only/auth/login")({
   loader: async ({ context: { trpcQueryUtils } }) => {
-    const currentUser = await trpcQueryUtils.auth.currentUser.ensureData();
-    // if (currentUser) return redirect({ to: "/" });
+    const { currentUser } = await trpcQueryUtils.auth.currentUser.ensureData();
+    if (currentUser) return redirect({ to: "/" });
     await trpcQueryUtils.auth.getSpotifyAuthUrl.prefetch();
   },
   component: LoginPage,

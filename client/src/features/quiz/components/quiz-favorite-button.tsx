@@ -1,5 +1,5 @@
 import { Quiz } from "@music-quiz/server/database/schema";
-import { Heart } from "lucide-react";
+import { Star } from "lucide-react";
 
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/button";
@@ -37,10 +37,10 @@ export const QuizFavoriteButton = ({
       onClick={handleFavorite}
       disabled={favoriteMutation.isPending || unfavoriteMutation.isPending}
     >
-      <Heart
+      <Star
         className={cn(
           "size-6 fill-transparent transition-colors",
-          isFavorited && "fill-red-500 text-red-500",
+          isFavorited && "fill-accent text-accent",
         )}
       />
       <span>{favoritesCount}</span>

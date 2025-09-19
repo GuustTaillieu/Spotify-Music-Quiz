@@ -20,6 +20,7 @@ export const spotifyTokenSchema = z.object({
   token_type: z.string(),
   scope: z.string(),
   expires_in: z.number(),
+  issued_at: z.number(),
   refresh_token: z.string(),
 });
 

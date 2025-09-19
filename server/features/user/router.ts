@@ -7,8 +7,8 @@ import { db } from "../../database";
 import {
   notificationsTable,
   quizAttendeesTable,
-  quizesSelectSchema,
-  quizesTable,
+  quizzesSelectSchema,
+  quizzesTable,
   userFollowsTable,
 } from "../../database/schema";
 import { protectedProcedure, publicProcedure, router } from "../../trpc";
@@ -20,7 +20,7 @@ import {
   getUserFollowersCount,
   getUserFollowing,
   getUserFollowingCount,
-  getUserOwnsQuizesCount,
+  getUserOwnsquizzesCount,
 } from "./helpers";
 
 export const userRouter = router({
@@ -66,19 +66,12 @@ export const userRouter = router({
         followersCount: z.number(),
         followingCount: z.number(),
         isFollowing: z.boolean(),
-        ownedQuizesCount: z.number(),
+        ownedQuizzesCount: z.number(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const user = await db.query.usersTable.findFirst({
         where: eq(usersTable.id, input.id),
-        columns: {
-          id: true,
-          name: true,
-          spotifyId: true,
-          createdAt: true,
-          updatedAt: true,
-        },
       });
 
       if (!user) {
@@ -88,11 +81,11 @@ export const userRouter = router({
         });
       }
 
-      const [followersCount, followingCount, ownedQuizesCount, userContext] =
+      const [followersCount, followingCount, ownedQuizzesCount, userContext] =
         await Promise.all([
           getUserFollowersCount(input.id),
           getUserFollowingCount(input.id),
-          getUserOwnsQuizesCount(input.id),
+          getUserOwnsquizzesCount(input.id),
           getUserFollowContext(input.id, ctx.user?.id),
         ]);
 
@@ -101,7 +94,7 @@ export const userRouter = router({
         followersCount,
         followingCount,
         isFollowing: userContext.isFollowing,
-        ownedQuizesCount,
+        ownedQuizzesCount,
       };
     }),
 
@@ -306,7 +299,7 @@ export const userRouter = router({
   quizAttendees: publicProcedure
     .input(
       z.object({
-        quizId: quizesSelectSchema.shape.id,
+        quizId: quizzesSelectSchema.shape.id,
         limit: z.number().optional(),
         cursor: z.number().optional(),
       }),
@@ -328,8 +321,8 @@ export const userRouter = router({
       const limit = input.limit ?? DEFAULT_USER_LIMIT;
       const cursor = input.cursor ?? 0;
 
-      const quiz = await db.query.quizesTable.findFirst({
-        where: eq(quizesTable.id, input.quizId),
+      const quiz = await db.query.quizzesTable.findFirst({
+        where: eq(quizzesTable.id, input.quizId),
       });
 
       if (!quiz) {

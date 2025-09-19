@@ -1,4 +1,4 @@
-import { Quiz, User } from "@music-quiz/server/database/schema";
+import { LocalUser, Quiz } from "@music-quiz/server/database/schema";
 import { QuizFilterParams } from "@music-quiz/shared/schema/quiz";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -118,7 +118,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
         T extends {
           isAttending: boolean;
           attendeesCount: number;
-          attendees?: User[];
+          attendees?: LocalUser[];
         },
       >(oldData: T) {
         return {
@@ -175,7 +175,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.map((quiz) =>
+            quizzes: page.quizzes.map((quiz) =>
               quiz.id === id ? markAsAttending(quiz) : quiz,
             ),
           })),
@@ -183,18 +183,21 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
       });
 
       if (pathUserId) {
-        utils.quiz.byUserId.setInfiniteData({ id: pathUserId }, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              quiz: page.quizes.map((quiz) =>
-                quiz.id === id ? markAsAttending(quiz) : quiz,
-              ),
-            })),
-          };
-        });
+        utils.quiz.byUserId.setInfiniteData(
+          { userId: pathUserId },
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                quizzes: page.quizzes.map((quiz) =>
+                  quiz.id === id ? markAsAttending(quiz) : quiz,
+                ),
+              })),
+            };
+          },
+        );
       }
 
       if (searchPage.isActive) {
@@ -204,7 +207,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
             ...oldData,
             pages: oldData.pages.map((page) => ({
               ...page,
-              quiz: page.quizes.map((quiz) =>
+              quizzes: page.quizzes.map((quiz) =>
                 quiz.id === id ? markAsAttending(quiz) : quiz,
               ),
             })),
@@ -218,7 +221,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.map((quiz) =>
+            quizzes: page.quizzes.map((quiz) =>
               quiz.id === id ? markAsAttending(quiz) : quiz,
             ),
           })),
@@ -261,7 +264,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
         T extends {
           isAttending: boolean;
           attendeesCount: number;
-          attendees?: User[];
+          attendees?: LocalUser[];
         },
       >(oldData: T) {
         return {
@@ -320,7 +323,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.map((quiz) =>
+            quizzes: page.quizzes.map((quiz) =>
               quiz.id === id ? markAsUnattending(quiz) : quiz,
             ),
           })),
@@ -336,7 +339,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
               ...oldData,
               pages: oldData.pages.map((page) => ({
                 ...page,
-                quiz: page.quizes.map((quiz) =>
+                quizzes: page.quizzes.map((quiz) =>
                   quiz.id === id ? markAsUnattending(quiz) : quiz,
                 ),
               })),
@@ -352,7 +355,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
             ...oldData,
             pages: oldData.pages.map((page) => ({
               ...page,
-              quiz: page.quizes.map((quiz) =>
+              quizzes: page.quizzes.map((quiz) =>
                 quiz.id === id ? markAsUnattending(quiz) : quiz,
               ),
             })),
@@ -366,7 +369,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.map((quiz) =>
+            quizzes: page.quizzes.map((quiz) =>
               quiz.id === id ? markAsUnattending(quiz) : quiz,
             ),
           })),
@@ -416,18 +419,18 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
       }
 
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      const invalidateUserQuizs = pathUserId
+      const invalidateUserQuizzes = pathUserId
         ? [utils.quiz.byUserId.cancel({ userId: pathUserId })]
         : [];
-      const invalidateSearchQuizs = searchPage.isActive
+      const invalidateSearchQuizzes = searchPage.isActive
         ? [utils.quiz.search.cancel(searchPage.params)]
         : [];
 
       await Promise.all([
         utils.quiz.byId.cancel({ id }),
         utils.quiz.feed.cancel(),
-        ...invalidateUserQuizs,
-        ...invalidateSearchQuizs,
+        ...invalidateUserQuizzes,
+        ...invalidateSearchQuizzes,
       ]);
 
       // Snapshot the previous data
@@ -456,7 +459,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.map((quiz) =>
+            quizzes: page.quizzes.map((quiz) =>
               quiz.id === id ? markAsFavorited(quiz) : quiz,
             ),
           })),
@@ -472,7 +475,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
               ...oldData,
               pages: oldData.pages.map((page) => ({
                 ...page,
-                quiz: page.quizes.map((quiz) =>
+                quizzes: page.quizzes.map((quiz) =>
                   quiz.id === id ? markAsFavorited(quiz) : quiz,
                 ),
               })),
@@ -488,7 +491,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
             ...oldData,
             pages: oldData.pages.map((page) => ({
               ...page,
-              quiz: page.quizes.map((quiz) =>
+              quizzes: page.quizzes.map((quiz) =>
                 quiz.id === id ? markAsFavorited(quiz) : quiz,
               ),
             })),
@@ -576,7 +579,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.map((quiz) =>
+            quizzes: page.quizzes.map((quiz) =>
               quiz.id === id ? markAsUnfavorited(quiz) : quiz,
             ),
           })),
@@ -589,7 +592,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
           ...oldData,
           pages: oldData.pages.map((page) => ({
             ...page,
-            quiz: page.quizes.filter((quiz) => quiz.id !== id),
+            quizzes: page.quizzes.filter((quiz) => quiz.id !== id),
           })),
         };
       });
@@ -603,7 +606,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
               ...oldData,
               pages: oldData.pages.map((page) => ({
                 ...page,
-                quiz: page.quizes.map((quiz) =>
+                quizzes: page.quizzes.map((quiz) =>
                   quiz.id === id ? markAsUnfavorited(quiz) : quiz,
                 ),
               })),
@@ -619,7 +622,7 @@ export const useQuizMutations = (options: QuizMutationsOptions = {}) => {
             ...oldData,
             pages: oldData.pages.map((page) => ({
               ...page,
-              quiz: page.quizes.map((quiz) =>
+              quizzes: page.quizzes.map((quiz) =>
                 quiz.id === id ? markAsUnfavorited(quiz) : quiz,
               ),
             })),

@@ -2,7 +2,7 @@ import { index, int, text } from "drizzle-orm/sqlite-core";
 import { sqliteTable } from "drizzle-orm/sqlite-core";
 import { createSelectSchema } from "drizzle-zod";
 
-import { quizesTable } from "../quiz/models";
+import { quizzesTable } from "../quiz/models";
 import { usersTable } from "../user/models";
 
 const notificationTypeEnum = [
@@ -23,7 +23,7 @@ export const notificationsTable = sqliteTable(
     }).notNull(),
     read: int("read", { mode: "boolean" }).notNull().default(false),
 
-    quizId: int("quiz_id").references(() => quizesTable.id, {
+    quizId: int("quiz_id").references(() => quizzesTable.id, {
       onDelete: "cascade",
     }),
     fromUserId: int("from_user_id")

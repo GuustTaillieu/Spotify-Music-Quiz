@@ -1,5 +1,12 @@
 import { Quiz, User } from "@music-quiz/server/database/schema";
-import { ChevronsUpDown, Eye, EyeOff, LoaderIcon, Plus } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Eye,
+  EyeOff,
+  LoaderIcon,
+  Play,
+  Plus,
+} from "lucide-react";
 import { ComponentProps, useState } from "react";
 
 import { Button } from "@/features/shared/components/ui/button";
@@ -9,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/features/shared/components/ui/dropdown-menu";
 import {
@@ -26,25 +32,123 @@ type QuizSwitcherProps = {
 } & ComponentProps<typeof SidebarMenuButton>;
 
 export function QuizSwitcher({ user, ...props }: QuizSwitcherProps) {
-  const [{ pages }, quizesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
+  const [{ pages }, quizzesQuery] = trpc.quiz.byUserId.useSuspenseInfiniteQuery(
     { userId: user.id },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     },
   );
-  const quizes = pages.flatMap((page) => page.quizes);
+  const quizzes = pages.flatMap((page) => page.quizzes);
 
-  const loadMore = () => quizesQuery.fetchNextPage();
+  const loadMore = () => quizzesQuery.fetchNextPage();
 
-  if (quizesQuery.isLoading) {
+  if (quizzesQuery.isLoading) {
     return <QuizSwitcherLoading {...props} />;
-  } else if (quizes.length === 0 || !quizes) {
-    return <QuizSwitcherNoQuizes {...props} />;
+  } else if (quizzes.length === 0 || !quizzes) {
+    return <QuizSwitcherNoQuizzes {...props} />;
   } else {
     return (
-      <QuizSwitcherLoaded quizes={quizes} loadMore={loadMore} {...props} />
+      <QuizSwitcherLoaded
+        quizzes={quizzes}
+        loadMore={loadMore}
+        canLoadMore={quizzesQuery.hasNextPage}
+        {...props}
+      />
     );
   }
+}
+
+type QuizSwitcherLoadedProps = Omit<QuizSwitcherProps, "user"> & {
+  quizzes: Quiz[];
+  canLoadMore: boolean;
+  loadMore: () => void;
+};
+
+function QuizSwitcherLoaded({
+  quizzes,
+  canLoadMore,
+  loadMore,
+  className,
+  ...props
+}: QuizSwitcherLoadedProps) {
+  const { isMobile } = useSidebar();
+  const [activeQuiz, setActiveQuiz] = useState(quizzes?.[0]);
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className={cn(
+                "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
+                className,
+              )}
+              {...props}
+            >
+              <div className="bg-accent text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                {activeQuiz.public ? <Eye /> : <EyeOff />}
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">{activeQuiz.title}</span>
+                <span className="truncate text-xs">Ready to play</span>
+              </div>
+              <ChevronsUpDown className="ml-auto" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            align="start"
+            side={isMobile ? "bottom" : "right"}
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
+              Quizzes
+            </DropdownMenuLabel>
+
+            {quizzes.map((quiz) => (
+              <DropdownMenuItem
+                key={quiz.title}
+                onClick={() => setActiveQuiz(quiz)}
+                className="gap-2 p-2"
+              >
+                <div className="flex size-6 items-center justify-center rounded-md border">
+                  {quiz.public ? <Eye /> : <EyeOff />}
+                </div>
+                <span className="truncate">{quiz.title}</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="ml-auto aspect-square h-5"
+                  onClick={
+                    () => console.log("play", activeQuiz.id)
+                    // TODO: start a game of the quiz
+                  }
+                >
+                  <Play className="size-2" />
+                </Button>
+              </DropdownMenuItem>
+            ))}
+            {canLoadMore && (
+              <Button variant="link" onClick={loadMore}>
+                Load more
+              </Button>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 p-2">
+              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+                <Plus className="size-4" />
+              </div>
+              <div className="text-muted-foreground font-medium">
+                Create quiz
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
 }
 
 type QuizSwitcherLoadingProps = Omit<QuizSwitcherProps, "user">;
@@ -71,7 +175,7 @@ function QuizSwitcherLoading({
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium">Loading...</span>
             <span className="truncate text-xs">
-              Please wait while we load your quizes
+              Please wait while we load your quizzes
             </span>
           </div>
         </SidebarMenuButton>
@@ -80,12 +184,12 @@ function QuizSwitcherLoading({
   );
 }
 
-type QuizSwitcherNoQuizesProps = Omit<QuizSwitcherProps, "user">;
+type QuizSwitcherNoQuizzesProps = Omit<QuizSwitcherProps, "user">;
 
-function QuizSwitcherNoQuizes({
+function QuizSwitcherNoQuizzes({
   className,
   ...props
-}: QuizSwitcherNoQuizesProps) {
+}: QuizSwitcherNoQuizzesProps) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -102,91 +206,12 @@ function QuizSwitcherNoQuizes({
             <Plus className="text-accent-foreground size-6 rounded-lg" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">No quizes yet</span>
+            <span className="truncate font-medium">No quizzes yet</span>
             <span className="truncate text-xs">
               Click here to create your first!
             </span>
           </div>
         </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-}
-
-type QuizSwitcherLoadedProps = Omit<QuizSwitcherProps, "user"> & {
-  quizes: Quiz[];
-  loadMore: () => void;
-};
-
-function QuizSwitcherLoaded({
-  quizes,
-  loadMore,
-  className,
-  ...props
-}: QuizSwitcherLoadedProps) {
-  const { isMobile } = useSidebar();
-  const [activeQuiz, setActiveQuiz] = useState(quizes?.[0]);
-
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className={cn(
-                "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
-                className,
-              )}
-              {...props}
-            >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                {activeQuiz.public ? <Eye /> : <EyeOff />}
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeQuiz.title}</span>
-                <span className="truncate text-xs">Ready to play</span>
-              </div>
-              <ChevronsUpDown className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Quizes
-            </DropdownMenuLabel>
-
-            {quizes.map((quiz, index) => (
-              <DropdownMenuItem
-                key={quiz.title}
-                onClick={() => setActiveQuiz(quiz)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border">
-                  {quiz.public ? <Eye /> : <EyeOff />}
-                </div>
-                {quiz.title}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
-            <Button variant="link" className="w-full" onClick={loadMore}>
-              Load more
-            </Button>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <Plus className="size-4" />
-              </div>
-              <div className="text-muted-foreground font-medium">
-                Create quiz
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   );

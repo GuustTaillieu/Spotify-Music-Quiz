@@ -4,19 +4,19 @@ import { QuizForList } from "../types";
 import { QuizCard } from "./quiz-card";
 
 type QuizListProps = {
-  quizes: QuizForList[];
+  quizzes: QuizForList[];
   isLoading?: boolean;
-  noQuizesMessage?: string;
+  noQuizzesMessage?: string;
 };
 
 const QuizList = ({
-  quizes,
+  quizzes,
   isLoading,
-  noQuizesMessage = "No quizes found",
+  noQuizzesMessage = "No quizzes found",
 }: QuizListProps) => {
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5">
-      {quizes.map((quiz) => (
+      {quizzes.map((quiz) => (
         <QuizCard key={quiz.id} quiz={quiz} />
       ))}
       {isLoading && (
@@ -24,9 +24,9 @@ const QuizList = ({
           <Spinner />
         </div>
       )}
-      {!isLoading && quizes.length === 0 && (
+      {!isLoading && quizzes.length === 0 && (
         <div className="flex justify-center">
-          <h1 className="text-2xl font-bold">{noQuizesMessage}</h1>
+          <h1 className="text-2xl font-bold">{noQuizzesMessage}</h1>
         </div>
       )}
     </div>
